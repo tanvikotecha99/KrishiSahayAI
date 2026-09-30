@@ -1,0 +1,948 @@
+﻿@model KrishiSahayAI.Models.CropDoctorViewModel
+
+@{
+    ViewData["Title"] = "AI Crop Doctor";
+}
+
+<div class="ks-page">
+
+    <!-- ===================================================== -->
+    <!-- HEADER -->
+    <!-- ===================================================== -->
+
+    <section class="ks-page-header">
+
+        <div>
+            <div class="ks-eyebrow">
+                🌿 KRISHISAHAY AI
+            </div>
+
+            <h1>AI Crop Doctor</h1>
+
+            <p>
+                @if (Model.PublicMode)
+                {
+                    <text>
+                        Upload a clear photo of your crop and describe what you
+                        are observing. You can use AI Crop Doctor without logging in.
+                    </text>
+                }
+                else
+                {
+                    <text>
+                        Upload a clear photo of your crop and describe what you are
+                        observing. KrishiSahay AI will analyze the image together with
+                        your farm context and current weather information.
+                    </text>
+                }
+            </p>
+        </div>
+
+        <div class="ks-page-header-icon">
+            🔍
+        </div>
+
+    </section>
+
+
+    <!-- ===================================================== -->
+    <!-- FARM CONTEXT -->
+    <!-- ===================================================== -->
+
+    @if (!Model.PublicMode)
+    {
+        <section class="ks-card ks-crop-doctor-farm">
+
+            <div class="ks-section-heading">
+
+                <div>
+                    <span class="ks-section-label">
+                        YOUR FARM
+                    </span>
+
+                    <h2>
+                       @Model.CropName
+                    </h2>
+                </div>
+
+                <div class="ks-crop-doctor-farm-icon">
+                    🌱
+                </div>
+
+            </div>
+
+            <div class="ks-crop-doctor-farm-info">
+
+                <div>
+                    <span>Farmer</span>
+                    <strong>
+                        @Model.Farm.FarmerName
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Location</span>
+                    <strong>
+                        @Model.Farm.Location
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Land Area</span>
+                    <strong>
+                        @Model.Farm.LandSize @Model.Farm.LandUnit
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Water Source</span>
+                    <strong>
+                        @Model.Farm.WaterSource
+                    </strong>
+                </div>
+
+            </div>
+
+        </section>
+    }
+
+
+    <!-- ===================================================== -->
+    <!-- ERROR -->
+    <!-- ===================================================== -->
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="ks-crop-doctor-error">
+            <strong>⚠️ Something went wrong</strong>
+
+            <p>
+                @Model.ErrorMessage
+            </p>
+        </div>
+    }
+
+
+    <!-- ===================================================== -->
+    <!-- ANALYSIS RESULT -->
+    <!-- ===================================================== -->
+
+    @if (Model.HasAnalysis &&
+         !string.IsNullOrWhiteSpace(Model.Analysis))
+    {
+        <section class="ks-card ks-crop-analysis">
+
+            <div class="ks-crop-analysis-header">
+
+                <div>
+                    <span class="ks-section-label">
+                        AI ANALYSIS
+                    </span>
+
+                    <h2>
+                        Crop Doctor Report
+                    </h2>
+
+                    <p>
+                        @if (Model.PublicMode)
+                        {
+                            <text>
+                                Based on the uploaded image and your observation.
+                            </text>
+                        }
+                        else
+                        {
+                            <text>
+                                Based on the uploaded image, your observation,
+                                farm information and available environmental context.
+                            </text>
+                        }
+                    </p>
+                </div>
+
+                <div class="ks-crop-analysis-icon">
+                    🤖
+                </div>
+
+            </div>
+
+
+            <div class="ks-crop-analysis-notice">
+                <span>💡</span>
+
+                <p>
+                    This is an AI-assisted observation, not a definitive
+                    diagnosis. If the problem is severe, spreading rapidly,
+                    or unclear, consult a local agricultural expert or
+                    plant diagnostic service.
+                </p>
+            </div>
+
+
+            <div class="ks-crop-analysis-content">
+
+            @{
+    var formattedAnalysis =
+        System.Net.WebUtility.HtmlEncode(
+            Model.Analysis ?? "");
+
+    formattedAnalysis =
+        System.Text.RegularExpressions.Regex.Replace(
+            formattedAnalysis,
+            @"^###\s*(.+)$",
+            "<h3>$1</h3>",
+            System.Text.RegularExpressions.RegexOptions.Multiline);
+
+    formattedAnalysis =
+        System.Text.RegularExpressions.Regex.Replace(
+            formattedAnalysis,
+            @"\*\*(.+?)\*\*",
+            "<strong>$1</strong>");
+
+    formattedAnalysis =
+        System.Text.RegularExpressions.Regex.Replace(
+            formattedAnalysis,
+            @"^\*\s+(.+)$",
+            "<li>$1</li>",
+            System.Text.RegularExpressions.RegexOptions.Multiline);
+
+    formattedAnalysis =
+        System.Text.RegularExpressions.Regex.Replace(
+            formattedAnalysis,
+            @"(?:<li>.*?</li>\s*)+",
+            match =>
+                "<ul>" +
+                match.Value.Replace(
+                    Environment.NewLine,
+                    "") +
+                "</ul>",
+            System.Text.RegularExpressions.RegexOptions.Singleline);
+
+    formattedAnalysis =
+        formattedAnalysis.Replace(
+            "---",
+            "<hr />");
+
+    formattedAnalysis =
+        formattedAnalysis.Replace(
+            "\r\n",
+            "\n");
+
+    formattedAnalysis =
+        System.Text.RegularExpressions.Regex.Replace(
+            formattedAnalysis,
+            @"\n{2,}",
+            "<br/><br/>");
+
+    formattedAnalysis =
+        formattedAnalysis.Replace(
+            "\n",
+            "<br/>");
+}
+@Html.Raw(formattedAnalysis)
+
+            </div>
+
+
+            <div class="ks-crop-analysis-footer">
+
+                @if (Model.PublicMode)
+                {
+                    <a asp-controller="Home"
+                       asp-action="PublicCropDoctor"
+                       class="ks-btn ks-btn-primary">
+                        🔄 Analyze Another Image
+                    </a>
+
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="ks-btn ks-btn-secondary">
+                        ← Back to Home
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Home"
+                       asp-action="CropDoctor"
+                       asp-route-farmId="@Model.Farm.Id"
+                       asp-route-cropId="@Model.CropId"
+                       class="ks-btn ks-btn-primary">
+                        🔄 Analyze Another Image
+                    </a>
+
+                    <a href="/Home/Dashboard?id=@Model.Farm.Id"
+                       class="ks-btn ks-btn-secondary">
+                        ← Back to Farm
+                    </a>
+                }
+
+            </div>
+
+        </section>
+    }
+    else
+    {
+        <!-- ================================================= -->
+        <!-- UPLOAD FORM -->
+        <!-- ================================================= -->
+
+        <section class="ks-card ks-crop-upload-card">
+
+            <div class="ks-section-heading">
+
+                <div>
+                    <span class="ks-section-label">
+                        STEP 1
+                    </span>
+
+                    <h2>
+                        Upload a Crop Photo
+                    </h2>
+
+                    <p>
+                        Take a clear, well-lit photo of the affected
+                        plant part.
+                    </p>
+                </div>
+
+            </div>
+
+
+            @if (Model.PublicMode)
+            {
+                <div style="margin-bottom:20px; padding:16px 18px; border-radius:14px; background:#f1f8f2; border:1px solid #dcebdd; color:#315c3b;">
+                    <strong>🌿 Public Crop Doctor</strong>
+                    <p style="margin:6px 0 0;">
+                        No login or farm profile is required. Upload your crop photo
+                        and describe what you see to get an AI-assisted observation.
+                    </p>
+                </div>
+            }
+
+            <form asp-controller="Home"
+                  asp-action="@(Model.PublicMode ? "PublicCropDoctor" : "CropDoctor")"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="ks-crop-doctor-form">
+
+                <input type="hidden" id="SpokenLanguage" name="SpokenLanguage" value="" />
+
+                @Html.AntiForgeryToken()
+
+                @if (!Model.PublicMode)
+                {
+                    <input type="hidden"
+                           asp-for="Farm.Id" />
+
+                    <input type="hidden"
+                           asp-for="CropId" />
+                }
+
+
+                <!-- ========================================= -->
+                <!-- IMAGE UPLOAD -->
+                <!-- ========================================= -->
+
+                <div class="ks-crop-upload">
+
+                    <label for="CropImage"
+                           class="ks-crop-upload-label">
+
+                        <div class="ks-crop-upload-icon">
+                            📷
+                        </div>
+
+                        <strong>
+                            Choose Crop Image
+                        </strong>
+
+                        <span>
+                            JPG, PNG or WEBP · Maximum 10 MB
+                        </span>
+
+                    </label>
+
+                    <input asp-for="CropImage"
+                           id="CropImage"
+                           type="file"
+                           accept="image/jpeg,image/png,image/webp"
+                           class="ks-crop-file-input" />
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- IMAGE PREVIEW -->
+                <!-- ========================================= -->
+
+                <div id="cropImagePreviewContainer"
+                     class="ks-crop-image-preview-container"
+                     style="display:none;">
+
+                    <div class="ks-crop-image-preview">
+
+                        <img id="cropImagePreview"
+                             src=""
+                             alt="Crop image preview" />
+
+                        <button type="button"
+                                id="removeCropImage"
+                                class="ks-crop-image-remove">
+                            ×
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- OBSERVATION -->
+                <!-- ========================================= -->
+
+                <div class="ks-form-group">
+
+                    <label asp-for="Observation">
+                        What are you observing?
+                    </label>
+
+                    <textarea asp-for="Observation"
+                              class="ks-crop-doctor-textarea"
+                              rows="6"
+                              placeholder="For example:
+
+Leaves are turning yellow.
+I noticed small spots on some leaves.
+The problem started about 5 days ago.
+Some plants look healthy while others are affected."></textarea>
+
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:12px;">
+
+                        <button type="button"
+                                id="cropDoctorSpeakButton"
+                                class="ks-btn ks-btn-secondary"
+                                style="display:inline-flex; align-items:center; gap:8px;">
+                            🎤 Speak Observation
+                        </button>
+
+                        <span
+                            style="padding:10px 12px; border:1px solid #dfe8df; border-radius:10px; background:#fff; color:#183c23;">
+                            🌐 Auto-detect language
+                        </span>
+
+                    </div>
+
+                    <div id="cropDoctorVoiceStatus"
+                         class="ks-form-help"
+                         style="margin-top:8px;">
+                        🎤 Speak naturally in Gujarati, Hindi, Marathi, English or another supported language. Gemini will detect the spoken language automatically.
+                    </div>
+
+                    <div class="ks-form-help">
+                        Describe what you see, when it started and whether
+                        the problem is spreading.
+                    </div>
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- SAFETY -->
+                <!-- ========================================= -->
+
+                <div class="ks-crop-doctor-safety">
+
+                    <div class="ks-crop-doctor-safety-icon">
+                        🛡️
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Responsible AI guidance
+                        </strong>
+
+                        <p>
+                            KrishiSahay AI will identify visible observations
+                            and possible causes where appropriate. It will not
+                            treat an AI image analysis as a definitive diagnosis
+                            or provide pesticide, fungicide, herbicide or
+                            fertilizer dosage instructions.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- SUBMIT -->
+                <!-- ========================================= -->
+
+                <div class="ks-crop-doctor-submit">
+
+                    <button type="submit"
+                            class="ks-btn ks-btn-primary ks-btn-large">
+
+                        🔍 Analyze My Crop →
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+    }
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- JAVASCRIPT -->
+<!-- ========================================================= -->
+
+<script>
+
+    const cropImageInput =
+        document.getElementById("CropImage");
+
+    const cropImagePreview =
+        document.getElementById("cropImagePreview");
+
+    const cropImagePreviewContainer =
+        document.getElementById("cropImagePreviewContainer");
+
+    const removeCropImage =
+        document.getElementById("removeCropImage");
+
+    // =========================================================
+    // CROP DOCTOR SPEECH-TO-TEXT
+    // =========================================================
+
+    const cropDoctorSpeakButton =
+        document.getElementById("cropDoctorSpeakButton");
+
+    const cropDoctorVoiceStatus =
+        document.getElementById("cropDoctorVoiceStatus");
+
+    const cropDoctorObservation =
+        document.getElementById("Observation");
+
+    const cropDoctorSpokenLanguage =
+        document.getElementById("SpokenLanguage");
+
+    let cropDoctorMediaRecorder = null;
+    let cropDoctorAudioChunks = [];
+    let cropDoctorMediaStream = null;
+
+    function cropDoctorAntiForgeryToken() {
+
+        const form = document.querySelector("form");
+
+        if (!form) {
+            return "";
+        }
+
+        const token =
+            form.querySelector('input[name="__RequestVerificationToken"]');
+
+        return token ? token.value : "";
+    }
+
+    async function startCropDoctorVoiceInput() {
+
+        if (!cropDoctorSpeakButton || !cropDoctorObservation) {
+            return;
+        }
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            cropDoctorVoiceStatus.textContent =
+                "Voice input is not supported by this browser. Try Chrome or Edge.";
+            return;
+        }
+
+        if (cropDoctorMediaRecorder &&
+            cropDoctorMediaRecorder.state === "recording") {
+            cropDoctorMediaRecorder.stop();
+            return;
+        }
+
+        try {
+            cropDoctorMediaStream =
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            const preferredMimeTypes = [
+                "audio/webm;codecs=opus",
+                "audio/webm",
+                "audio/ogg;codecs=opus"
+            ];
+
+            const supportedMimeType =
+                preferredMimeTypes.find(
+                    type => MediaRecorder.isTypeSupported(type)
+                );
+
+            cropDoctorMediaRecorder = supportedMimeType
+                ? new MediaRecorder(
+                    cropDoctorMediaStream,
+                    { mimeType: supportedMimeType }
+                )
+                : new MediaRecorder(cropDoctorMediaStream);
+
+            cropDoctorAudioChunks = [];
+
+            cropDoctorMediaRecorder.ondataavailable =
+                function (event) {
+                    if (event.data && event.data.size > 0) {
+                        cropDoctorAudioChunks.push(event.data);
+                    }
+                };
+
+            cropDoctorMediaRecorder.onstart =
+                function () {
+                    cropDoctorSpeakButton.disabled = false;
+                    cropDoctorSpeakButton.textContent =
+                        "🔴 Stop recording";
+                    cropDoctorVoiceStatus.textContent =
+                        "Listening... Speak naturally. Language will be detected automatically.";
+                };
+
+            cropDoctorMediaRecorder.onerror =
+                function () {
+                    cropDoctorVoiceStatus.textContent =
+                        "Voice recording could not be completed. Please try again.";
+                    stopCropDoctorVoiceStream();
+                    resetCropDoctorVoiceButton();
+                };
+
+            cropDoctorMediaRecorder.onstop =
+                async function () {
+                    stopCropDoctorVoiceStream();
+
+                    cropDoctorSpeakButton.disabled = true;
+                    cropDoctorSpeakButton.textContent =
+                        "⏳ Transcribing...";
+                    cropDoctorVoiceStatus.textContent =
+                        "Gemini is transcribing your observation and detecting the language...";
+
+                    try {
+                        const blobType =
+                            cropDoctorMediaRecorder &&
+                            cropDoctorMediaRecorder.mimeType
+                                ? cropDoctorMediaRecorder.mimeType
+                                : "audio/webm";
+
+                        const audioBlob =
+                            new Blob(
+                                cropDoctorAudioChunks,
+                                { type: blobType }
+                            );
+
+                        if (audioBlob.size === 0) {
+                            throw new Error("empty-audio");
+                        }
+
+                        const formData = new FormData();
+                        formData.append(
+                            "audio",
+                            audioBlob,
+                            "krishisahay-crop-observation.webm"
+                        );
+
+                        formData.append(
+                            "__RequestVerificationToken",
+                            cropDoctorAntiForgeryToken()
+                        );
+
+                        const response =
+                            await fetch(
+                                '@Url.Action("TranscribeSpeech", "Home")',
+                                {
+                                    method: "POST",
+                                    body: formData,
+                                    credentials: "same-origin"
+                                }
+                            );
+
+                        const result =
+                            await response.json();
+
+                        if (!response.ok || !result.success) {
+                            throw new Error(
+                                result.message || "transcription-failed"
+                            );
+                        }
+
+                        const transcript =
+                            result.transcript || "";
+
+                        const existingText =
+                            cropDoctorObservation.value.trim();
+
+                        cropDoctorObservation.value =
+                            existingText
+                                ? existingText + " " + transcript
+                                : transcript;
+
+                        if (cropDoctorSpokenLanguage) {
+                            cropDoctorSpokenLanguage.value =
+                                result.languageCode || "";
+                        }
+
+                        cropDoctorObservation.dispatchEvent(
+                            new Event("input", { bubbles: true })
+                        );
+
+                        cropDoctorObservation.focus();
+
+                        cropDoctorVoiceStatus.textContent =
+                            "✅ Detected " +
+                            (result.languageName || "the spoken language") +
+                            ". Observation added.";
+                    }
+                    catch (error) {
+                        console.error(error);
+
+                        cropDoctorVoiceStatus.textContent =
+                            "Voice transcription could not be completed. Please try again.";
+                    }
+                    finally {
+                        resetCropDoctorVoiceButton();
+                        cropDoctorMediaRecorder = null;
+                        cropDoctorAudioChunks = [];
+                    }
+                };
+
+            cropDoctorMediaRecorder.start();
+        }
+        catch (error) {
+            console.error(error);
+
+            stopCropDoctorVoiceStream();
+            resetCropDoctorVoiceButton();
+
+            if (error && error.name === "NotAllowedError") {
+                cropDoctorVoiceStatus.textContent =
+                    "🎤 Microphone permission was denied. Please allow microphone access and try again.";
+            }
+            else {
+                cropDoctorVoiceStatus.textContent =
+                    "Could not start the microphone. Please try again.";
+            }
+        }
+    }
+
+    function stopCropDoctorVoiceStream() {
+
+        if (cropDoctorMediaStream) {
+            cropDoctorMediaStream.getTracks().forEach(
+                track => track.stop()
+            );
+        }
+
+        cropDoctorMediaStream = null;
+    }
+
+    function resetCropDoctorVoiceButton() {
+
+        if (cropDoctorSpeakButton) {
+            cropDoctorSpeakButton.disabled = false;
+            cropDoctorSpeakButton.textContent =
+                "🎤 Speak Observation";
+        }
+    }
+
+    if (cropDoctorSpeakButton) {
+        cropDoctorSpeakButton.addEventListener(
+            "click",
+            startCropDoctorVoiceInput
+        );
+    }
+
+
+    if (cropImageInput) {
+
+        cropImageInput.addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            const maxSize =
+                10 * 1024 * 1024;
+
+            if (file.size > maxSize) {
+
+                alert(
+                    "Please select an image smaller than 10 MB."
+                );
+
+                this.value = "";
+
+                if (cropImagePreviewContainer) {
+                    cropImagePreviewContainer.style.display =
+                        "none";
+                }
+
+                return;
+            }
+
+
+            const allowedTypes = [
+                "image/jpeg",
+                "image/png",
+                "image/webp"
+            ];
+
+
+            if (!allowedTypes.includes(file.type)) {
+
+                alert(
+                    "Please upload a JPG, PNG or WEBP image."
+                );
+
+                this.value = "";
+
+                if (cropImagePreviewContainer) {
+                    cropImagePreviewContainer.style.display =
+                        "none";
+                }
+
+                return;
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload = function (event) {
+
+                cropImagePreview.src =
+                    event.target.result;
+
+                cropImagePreviewContainer.style.display =
+                    "block";
+            };
+
+
+            reader.readAsDataURL(file);
+
+        });
+
+    }
+
+
+    if (removeCropImage) {
+
+        removeCropImage.addEventListener(
+            "click",
+            function () {
+
+                cropImageInput.value = "";
+
+                cropImagePreview.src = "";
+
+                cropImagePreviewContainer.style.display =
+                    "none";
+
+            }
+        );
+
+    }
+
+</script>
+<!-- ========================================================= -->
+<!-- CROP DOCTOR HISTORY -->
+<!-- ========================================================= -->
+
+<section class="ks-card" style="margin-top: 24px;">
+
+    <div class="ks-card-header">
+
+        <div>
+            <span class="ks-small-label">CROP DOCTOR HISTORY</span>
+
+            <h2>Previous @Model.CropName Checks</h2>
+
+            <p>
+                Earlier AI crop observations saved for this crop.
+            </p>
+        </div>
+
+    </div>
+
+    @if (Model.PreviousObservations != null && Model.PreviousObservations.Any())
+    {
+        <div style="display: grid; gap: 16px;">
+
+            @foreach (var observation in Model.PreviousObservations)
+            {
+                <div style="padding: 20px; border: 1px solid #dfe8df; border-radius: 16px; background: #fbfdfb; box-shadow: 0 4px 14px rgba(24, 60, 35, 0.05);">
+
+                    <div style="font-size: 13px; color: #6b7280; margin-bottom: 8px;">
+                        @observation.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(observation.Observation))
+                    {
+                        <div style="margin-bottom: 12px;">
+                            <strong>Your observation:</strong>
+
+                            <div style="margin-top: 4px;">
+                                @observation.Observation
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(observation.AiResult))
+                    {
+                        <div>
+                            <strong>AI Report:</strong>
+
+                            <div style="margin-top: 6px; white-space: pre-wrap;">
+                                @observation.AiResult
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            }
+
+        </div>
+    }
+    else
+    {
+        <div style="padding: 22px; border: 1px dashed #cfdccf; border-radius: 16px; background: #fbfdfb;">
+
+            <strong>No previous checks for this crop yet.</strong>
+
+            <p style="margin: 8px 0 0; color: #6b7280;">
+                Your saved AI Crop Doctor reports for @Model.CropName will appear here after an analysis is completed.
+            </p>
+
+        </div>
+    }
+
+    <!-- ========================================================= -->
+    <!-- HISTORY ACTIONS -->
+    <!-- ========================================================= -->
+
+    <div style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+
+        <a href="@Url.Action("CropDoctor", "Home", new { farmId = Model.Farm.Id, cropId = Model.CropId })"
+           class="ks-btn ks-btn-primary">
+            🔄 Analyze Another Image
+        </a>
+
+        <a href="/Home/Dashboard?id=@Model.Farm.Id"
+           class="ks-btn ks-btn-secondary">
+            ← Back to Farm
+        </a>
+
+    </div>
+
+</section>

@@ -1,0 +1,167 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        @ViewData["Title"] - KrishiSahay
+    </title>
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+          <link rel="stylesheet"
+      href="~/css/krishisahay.css"
+      asp-append-version="true" />
+
+</head>
+
+<body>
+
+    <!-- =========================================================
+         HEADER / NAVIGATION
+         ========================================================= -->
+
+    <header class="ks-navbar">
+
+        <div class="ks-navbar-inner">
+
+            <!-- BRAND -->
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="ks-brand">
+
+                <span class="ks-brand-icon">
+                    🌱
+                </span>
+
+                <span class="ks-brand-text">
+                    KrishiSahay
+                </span>
+
+            </a>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="ks-nav">
+
+                <!-- HOME -->
+
+                <a asp-controller="Home"
+                   asp-action="Index">
+
+                    Home
+
+                </a>
+
+
+                <!-- MY FARMS -->
+
+                <a asp-controller="Home"
+                   asp-action="MyFarms">
+
+                    My Farms
+
+                </a>
+
+
+                <!-- LEARN FARMING -->
+
+                <a asp-controller="Home"
+                   asp-action="Teach">
+
+                    Learn Farming
+
+                </a>
+
+
+                <!-- AI CROP DOCTOR -->
+<a asp-controller="Home"
+   asp-action="PublicCropDoctor"
+   title="Upload a crop photo and check your crop with AI">
+
+    🔍 AI Crop Doctor
+
+</a>
+
+                <!-- ASK AI -->
+
+                <a asp-controller="Home"
+                   asp-action="AskAI">
+
+                    Ask AI
+
+                </a>
+
+
+                <!-- WEATHER -->
+
+           <!-- WEATHER -->
+
+<a asp-controller="Weather"
+   asp-action="Select">
+
+    Weather
+
+</a>
+
+
+<!-- LOGIN / REGISTER -->
+
+                <partial name="_LoginPartial" />
+
+            </nav>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================================
+         MAIN CONTENT
+         ========================================================= -->
+
+    <main role="main">
+
+        @RenderBody()
+
+    </main>
+
+
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+
+    <footer class="border-top footer text-muted">
+
+        <div class="container">
+
+            &copy; @DateTime.Now.Year - KrishiSahay
+
+        </div>
+
+    </footer>
+
+
+    <!-- =========================================================
+         SCRIPTS
+         ========================================================= -->
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/js/site.js"
+            asp-append-version="true"></script>
+
+    @await RenderSectionAsync(
+        "Scripts",
+        required: false)
+
+</body>
+
+</html>

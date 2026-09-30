@@ -1,0 +1,462 @@
+﻿@model KrishiSahayAI.Models.SoilAssessmentViewModel
+@{
+    ViewData["Title"] = "Soil Assessment";
+
+    var farm = Model.Farm;
+    var cropName = ViewBag.CropName as string ?? farm?.Crop ?? "your crop";
+    var cropId = ViewBag.CropId;
+}
+
+<link rel="stylesheet" href="~/css/krishisahay.css" />
+
+<div class="ks-page">
+
+    <div class="ks-container">
+
+        <!-- HEADER -->
+        <div class="ks-page-header">
+
+            <div>
+
+                <div class="ks-eyebrow">
+                    🌱 FARM HEALTH
+                </div>
+
+                <h1>Soil Assessment</h1>
+
+                <p>
+                    Help KrishiSahay understand the soil
+                    conditions of your farm.
+                </p>
+
+            </div>
+
+            <div>
+
+                @if (cropId != null)
+                {
+                    <a asp-controller="Home"
+                       asp-action="CropDashboard"
+                       asp-route-farmId="@farm.Id"
+                       asp-route-cropId="@cropId"
+                       class="ks-btn ks-btn-outline">
+
+                        ← Crop Dashboard
+
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Home"
+                       asp-action="Dashboard"
+                       asp-route-id="@farm.Id"
+                       class="ks-btn ks-btn-outline">
+
+                        ← Farm Dashboard
+
+                    </a>
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- FARM CONTEXT -->
+        <div class="ks-card"
+             style="margin-bottom:24px;">
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:20px;
+                flex-wrap:wrap;">
+
+                <div>
+
+                    <div class="ks-eyebrow">
+                        YOUR FARM
+                    </div>
+
+                    <h2 style="margin-bottom:6px;">
+                        @farm.FarmerName's Farm
+                    </h2>
+
+                    <p style="margin:0;">
+                        📍 @farm.Location
+                        &nbsp; • &nbsp;
+                        🌾 @cropName
+                    </p>
+
+                </div>
+
+                <div>
+
+                    <strong>
+                        @farm.LandSize @farm.LandUnit
+                    </strong>
+
+                    <div style="font-size:13px;">
+                        Farm Area
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FORM -->
+        <div class="ks-card">
+
+            <form asp-controller="Home"
+                  asp-action="SoilAssessment"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       asp-for="Assessment.FarmProfileId" />
+
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger"
+                     style="margin-bottom:20px;">
+                </div>
+
+
+                <!-- 01 -->
+                <section class="ks-form-section">
+
+                    <div class="ks-form-number">
+                        01
+                    </div>
+
+                    <div class="ks-form-content">
+
+                        <h2>
+                            How well do you know your soil?
+                        </h2>
+
+                        <p>
+                            Tell us what you currently know
+                            about your soil.
+                        </p>
+
+                        <select asp-for="Assessment.SoilKnowledge"
+                                class="ks-input">
+
+                            <option value="">
+                                Select an option
+                            </option>
+
+                            <option value="Yes">
+                                🌱 Yes, I know my soil
+                            </option>
+
+                            <option value="No">
+                                🤔 I don't know my soil
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </section>
+
+
+                <!-- 02 -->
+                <section class="ks-form-section">
+
+                    <div class="ks-form-number">
+                        02
+                    </div>
+
+                    <div class="ks-form-content">
+
+                        <h2>
+                            What is your soil texture?
+                        </h2>
+
+                        <p>
+                            Choose the closest description
+                            based on your observation.
+                        </p>
+
+                        <select asp-for="Assessment.SoilTexture"
+                                class="ks-input">
+
+                            <option value="">
+                                Select soil texture
+                            </option>
+
+                            <option value="Sandy">
+                                🟡 Sandy
+                            </option>
+
+                            <option value="Clay">
+                                🟤 Clay
+                            </option>
+
+                            <option value="Loamy">
+                                🟢 Loamy
+                            </option>
+
+                            <option value="Other">
+                                Other / Not sure
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </section>
+
+
+                <!-- 03 -->
+                <section class="ks-form-section">
+
+                    <div class="ks-form-number">
+                        03
+                    </div>
+
+                    <div class="ks-form-content">
+
+                        <h2>
+                            What colour is your soil?
+                        </h2>
+
+                        <p>
+                            Soil colour can be recorded as an
+                            observation. It is not a replacement
+                            for laboratory testing.
+                        </p>
+
+                        <select asp-for="Assessment.SoilColour"
+                                class="ks-input">
+
+                            <option value="">
+                                Select soil colour
+                            </option>
+
+                            <option value="Black">
+                                ⚫ Black / Dark
+                            </option>
+
+                            <option value="Brown">
+                                🟤 Brown
+                            </option>
+
+                            <option value="Red">
+                                🔴 Red / Reddish
+                            </option>
+
+                            <option value="Yellow">
+                                🟡 Yellow / Yellowish
+                            </option>
+
+                            <option value="Other">
+                                Other / Not sure
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </section>
+
+
+                <!-- 04 -->
+                <section class="ks-form-section">
+
+                    <div class="ks-form-number">
+                        04
+                    </div>
+
+                    <div class="ks-form-content">
+
+                        <h2>
+                            How does water drain?
+                        </h2>
+
+                        <p>
+                            Think about what happens after
+                            rainfall or irrigation.
+                        </p>
+
+                        <select asp-for="Assessment.Drainage"
+                                class="ks-input">
+
+                            <option value="">
+                                Select drainage
+                            </option>
+
+                            <option value="Quickly">
+                                💧 Drains quickly
+                            </option>
+
+                            <option value="Moderately">
+                                💧 Drains moderately
+                            </option>
+
+                            <option value="Slowly">
+                                💧 Drains slowly
+                            </option>
+
+                            <option value="Not sure">
+                                🤔 Not sure
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </section>
+
+
+                <!-- 05 -->
+                <section class="ks-form-section">
+
+                    <div class="ks-form-number">
+                        05
+                    </div>
+
+                    <div class="ks-form-content">
+
+                        <h2>
+                            What was the previous crop?
+                        </h2>
+
+                        <p>
+                            Previous crop information can help
+                            KrishiSahay understand the field history.
+                        </p>
+
+                        <input asp-for="Assessment.PreviousCrop"
+                               class="ks-input"
+                               placeholder="e.g. Groundnut, Wheat, Cotton, None" />
+
+                    </div>
+
+                </section>
+
+
+                <!-- 06 -->
+                <section class="ks-form-section">
+
+                    <div class="ks-form-number">
+                        06
+                    </div>
+
+                    <div class="ks-form-content">
+
+                        <h2>
+                            Do you have a soil test?
+                        </h2>
+
+                        <p>
+                            A laboratory soil test provides more
+                            reliable information than visual
+                            observation alone.
+                        </p>
+
+                        <select asp-for="Assessment.SoilTestStatus"
+                                class="ks-input">
+
+                            <option value="">
+                                Select an option
+                            </option>
+
+                            <option value="Yes">
+                                ✅ Yes, I have a soil test
+                            </option>
+
+                            <option value="No">
+                                ❌ No soil test yet
+                            </option>
+
+                            <option value="Not sure">
+                                🤔 I'm not sure
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ACTIONS -->
+                <div style="
+                    margin-top:30px;
+                    display:flex;
+                    gap:12px;
+                    flex-wrap:wrap;">
+
+                    <button type="submit"
+                            class="ks-btn ks-btn-primary">
+
+                        🌱 Save Soil Assessment
+
+                    </button>
+
+
+                    @if (cropId != null)
+                    {
+                        <a asp-controller="Home"
+                           asp-action="CropDashboard"
+                           asp-route-farmId="@farm.Id"
+                           asp-route-cropId="@cropId"
+                           class="ks-btn ks-btn-outline">
+
+                            Cancel
+
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Home"
+                           asp-action="Dashboard"
+                           asp-route-id="@farm.Id"
+                           class="ks-btn ks-btn-outline">
+
+                            Cancel
+
+                        </a>
+                    }
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- INFORMATION -->
+        <div class="ks-card"
+             style="margin-top:24px;">
+
+            <h2>
+                💡 Why this matters
+            </h2>
+
+            <p>
+                Soil information helps KrishiSahay build a more
+                complete picture of your farm. When a laboratory
+                soil test is available, its results can later be
+                incorporated into more detailed recommendations.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

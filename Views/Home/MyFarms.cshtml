@@ -1,0 +1,288 @@
+﻿@model List<KrishiSahayAI.Models.FarmProfile>
+
+@{
+    ViewData["Title"] = "My Farms";
+}
+
+<div class="ks-page">
+
+    <div class="ks-container">
+        @if (TempData["FarmDeleteSuccess"] != null)
+{
+    <div class="ks-card"
+         style="margin-bottom:20px;
+                border-left:5px solid #2f7d32;
+                background:#f0f8f0;">
+
+        <strong style="color:#256628;">
+            ✓ @TempData["FarmDeleteSuccess"]
+        </strong>
+
+    </div>
+}
+
+@if (TempData["FarmDeleteError"] != null)
+{
+    <div class="ks-card"
+         style="margin-bottom:20px;
+                border-left:5px solid #c62828;
+                background:#fff5f5;">
+
+        <strong style="color:#c62828;">
+            @TempData["FarmDeleteError"]
+        </strong>
+
+    </div>
+}
+        <div class="ks-page-header">
+
+            <div>
+                <div class="ks-eyebrow">
+                    🌱 YOUR FARMS
+                </div>
+
+                <h1>My Farms</h1>
+
+                <p>
+                    Manage all your farms from one place.
+                    Select a farm to open its dashboard and manage its crops.
+                </p>
+            </div>
+
+            <div>
+             <a asp-controller="Home"
+   asp-action="Onboarding"
+   asp-route-forceNew="true"
+   class="ks-btn ks-btn-primary">
+    + Add New Farm
+</a>
+            </div>
+
+        </div>
+
+
+        @if (Model == null || Model.Count == 0)
+        {
+            <div class="ks-card" style="text-align:center; padding:50px 30px;">
+
+                <div style="font-size:48px; margin-bottom:15px;">
+                    🌾
+                </div>
+
+                <h2>No farms added yet</h2>
+
+                <p>
+                    Add your first farm to start tracking crops,
+                    weather, soil, water and AI recommendations.
+                </p>
+
+                <a asp-controller="Home"
+                   asp-action="Onboarding"
+                   class="ks-btn ks-btn-primary"
+                   style="margin-top:15px;">
+                    + Add Your First Farm
+                </a>
+
+            </div>
+        }
+        else
+        {
+            <div class="ks-grid">
+
+                @foreach (var farm in Model)
+                {
+                    <div class="ks-card">
+
+                        <!-- FARM HEADER -->
+
+                        <div style="display:flex;
+                                    justify-content:space-between;
+                                    align-items:flex-start;
+                                    gap:15px;">
+
+                            <div>
+
+                                <div class="ks-eyebrow">
+                                    FARM #@farm.Id
+                                </div>
+
+                                <h2 style="margin-bottom:5px;">
+                                    @(
+                                        string.IsNullOrWhiteSpace(farm.FarmerName)
+                                            ? "My Farm"
+                                            : farm.FarmerName + "'s Farm"
+                                    )
+                                </h2>
+
+                                <p style="margin-bottom:0;">
+                                    📍 @farm.Location
+                                </p>
+
+                            </div>
+
+                            <div style="font-size:32px;">
+                                🌾
+                            </div>
+
+                        </div>
+
+
+                        <!-- FARM INFORMATION -->
+
+                        <div style="display:grid;
+                                    grid-template-columns:repeat(2, 1fr);
+                                    gap:12px;
+                                    margin-top:25px;">
+
+                            <!-- LAND -->
+
+                            <div>
+
+                                <strong>Land</strong>
+
+                                <div>
+                                    @farm.LandSize @farm.LandUnit
+                                </div>
+
+                            </div>
+
+
+                            <!-- CROPS -->
+
+                            <div>
+
+                                <strong>Crops</strong>
+
+                                <div>
+                                    Manage crops inside this farm
+                                </div>
+
+                            </div>
+
+
+                            <!-- SOIL -->
+
+                            <div>
+
+                                <strong>Soil</strong>
+
+                                <div>
+                                    @(string.IsNullOrWhiteSpace(farm.SoilType)
+                                        ? "Not specified"
+                                        : farm.SoilType)
+                                </div>
+
+                            </div>
+
+
+                            <!-- WATER -->
+
+                            <div>
+
+                                <strong>Water</strong>
+
+                                <div>
+                                    @(string.IsNullOrWhiteSpace(farm.WaterSource)
+                                        ? "Not specified"
+                                        : farm.WaterSource)
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- FARM ACTIONS -->
+
+                       <!-- FARM ACTIONS -->
+
+<!-- FARM ACTIONS -->
+
+<div style="margin-top:25px;
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;">
+
+    <a asp-controller="Home"
+       asp-action="Dashboard"
+       asp-route-id="@farm.Id"
+       class="ks-btn ks-btn-primary">
+
+        Open Farm →
+
+    </a>
+
+
+    <a asp-controller="Home"
+       asp-action="MyCrops"
+       asp-route-farmId="@farm.Id"
+       class="ks-btn ks-btn-outline">
+
+        🌾 View Crops
+
+    </a>
+
+
+    <a asp-controller="Home"
+       asp-action="CropDoctor"
+       asp-route-farmId="@farm.Id"
+       class="ks-btn ks-btn-outline">
+
+        🔍 AI Crop Doctor
+
+    </a>
+
+
+    <!-- DELETE FARM -->
+
+    <form asp-controller="Home"
+          asp-action="DeleteFarm"
+          method="post"
+          style="display:inline;"
+          onsubmit="return confirmDeleteFarm('@farm.FarmerName');">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden"
+               name="farmId"
+               value="@farm.Id" />
+
+        <button type="submit"
+                class="ks-btn"
+                style="background:#fff1f1;
+                       color:#c62828;
+                       border:1px solid #f0b8b8;
+                       cursor:pointer;">
+
+            🗑 Delete Farm
+
+        </button>
+
+    </form>
+
+</div>                    </div>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>
+<script>
+    function confirmDeleteFarm(farmerName) {
+
+        const farmName =
+            farmerName && farmerName.trim() !== ""
+                ? farmerName.trim() + "'s Farm"
+                : "this farm";
+
+        return confirm(
+            "Are you sure you want to delete " +
+            farmName +
+            "?\n\n" +
+            "This will permanently delete the farm and its associated crops, activities, observations, soil and water records.\n\n" +
+            "This action cannot be undone."
+        );
+    }
+</script>

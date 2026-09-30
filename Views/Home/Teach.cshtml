@@ -1,0 +1,215 @@
+﻿@model List<KrishiSahayAI.Models.LearningTopic>
+
+@{
+    ViewData["Title"] = "Learn Farming";
+
+    var completedTopicIds =
+        ViewData["CompletedTopicIds"] as HashSet<int>
+        ?? new HashSet<int>();
+
+    var allLearningCompleted =
+        ViewData["AllLearningCompleted"] is bool completed
+            ? completed
+            : false;
+
+    var farmId =
+        ViewData["FarmId"] is int id
+            ? id
+            : 0;
+}
+
+<link rel="stylesheet" href="~/css/krishisahay.css" />
+
+<div class="ks-academy">
+
+    <section class="ks-academy-hero">
+
+        <div class="ks-badge">
+            🎓 KRISHISAHAY ACADEMY
+        </div>
+
+        <h1>
+            Learn farming,<br />
+            <span>step by step.</span>
+        </h1>
+
+        <p>
+            Whether you're starting from zero or already have
+            farming experience, learn the knowledge you need
+            from soil to harvest.
+        </p>
+
+        @if (!string.IsNullOrWhiteSpace(
+            (string?)ViewData["Crop"]))
+        {
+            <div class="ks-learning-context">
+
+                🌾 Your selected crop:
+                <strong>
+                    @ViewData["Crop"]
+                </strong>
+
+            </div>
+        }
+
+    </section>
+
+
+    <section class="ks-academy-section">
+
+        <div class="ks-academy-heading">
+
+            <div>
+                <span class="ks-small-label">
+                    FARMING KNOWLEDGE
+                </span>
+
+                <h2>
+                    Start learning
+                </h2>
+            </div>
+
+            <p>
+                Complete each lesson to finish the
+                learning journey.
+            </p>
+
+        </div>
+
+
+        <div class="ks-topic-grid">
+
+            @foreach (var topic in Model.OrderBy(t => t.Order))
+            {
+                var topicCompleted =
+                    completedTopicIds.Contains(topic.Id);
+
+                <a href="/Home/Lesson/@topic.Id?farmId=@farmId"
+                   class="ks-topic-card">
+
+                    <div class="ks-topic-icon">
+                        @topic.Icon
+                    </div>
+
+                    <span class="ks-topic-category">
+                        @topic.Category
+                    </span>
+
+                    <h3>
+                        @topic.Title
+                    </h3>
+
+                    <p>
+                        @topic.Description
+                    </p>
+
+                    <div class="ks-topic-footer">
+
+                        @if (topicCompleted)
+                        {
+                            <span>
+                                ✅ Completed
+                            </span>
+
+                            <strong>
+                                Review →
+                            </strong>
+                        }
+                        else
+                        {
+                            <span>
+                                @topic.LessonCount lessons
+                            </span>
+
+                            <strong>
+                                Learn →
+                            </strong>
+                        }
+
+                    </div>
+
+                </a>
+            }
+
+        </div>
+
+    </section>
+
+
+    @if (allLearningCompleted)
+    {
+        <section class="ks-card"
+                 style="margin-top:30px; text-align:center;">
+
+            <div style="font-size:42px;">
+                🎓
+            </div>
+
+            <div class="ks-eyebrow">
+                LEARNING COMPLETE
+            </div>
+
+            <h2>
+                You've completed all 11 farming knowledge topics.
+            </h2>
+
+            <p>
+                All lessons are complete. You can now complete
+                this learning step in your Farm Journey.
+            </p>
+
+            <form asp-controller="Home"
+                  asp-action="CompleteLearning"
+                  method="post"
+                  style="margin-top:20px;">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="farmId"
+                       value="@farmId" />
+
+                <input type="hidden"
+                       name="topicId"
+                       value="4" />
+
+                <button type="submit"
+                        class="ks-btn ks-btn-primary">
+
+                    Complete Learning ✓
+
+                </button>
+
+            </form>
+
+        </section>
+    }
+
+
+    <section class="ks-academy-tip">
+
+        <div class="ks-tip-icon">
+            💡
+        </div>
+
+        <div>
+
+            <span class="ks-small-label">
+                BEGINNER TIP
+            </span>
+
+            <h2>
+                Don't know where to start?
+            </h2>
+
+            <p>
+                Start with <strong>Farming Basics</strong>,
+                then understand your soil and water before
+                choosing a crop.
+            </p>
+
+        </div>
+
+    </section>
+
+</div>

@@ -1,0 +1,265 @@
+﻿@model KrishiSahayAI.Models.FarmProfile
+
+@{
+    ViewData["Title"] = "Prepare Your Growing Area";
+
+    var cropCount =
+        ViewBag.CropCount is int count
+            ? count
+            : 0;
+}
+
+<link rel="stylesheet"
+      href="~/css/krishisahay.css" />
+
+<div class="ks-page-container">
+
+    <a asp-controller="Home"
+       asp-action="Dashboard"
+       asp-route-id="@Model.Id"
+       class="ks-back-link">
+
+        ← Back to My Farm
+
+    </a>
+
+
+    <section class="ks-card"
+             style="
+                margin-top:24px;
+                padding:40px;
+                text-align:center;
+             ">
+
+        <div style="
+            font-size:52px;
+            margin-bottom:15px;
+        ">
+            🚜
+        </div>
+
+
+        <span class="ks-small-label">
+            FARM JOURNEY
+        </span>
+
+
+        <h1 style="margin-top:10px;">
+            Prepare your growing area
+        </h1>
+
+
+        <p style="
+            max-width:720px;
+            margin:15px auto 30px;
+            line-height:1.7;
+        ">
+            Before planting, make sure your growing space
+            is ready for the selected crop.
+        </p>
+
+
+        <!-- FARM INFORMATION -->
+
+        <div style="
+            display:grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(180px, 1fr));
+            gap:16px;
+            margin:30px 0;
+            text-align:left;
+        ">
+
+            <div class="ks-card"
+                 style="padding:20px;">
+
+                <span class="ks-small-label">
+                    LOCATION
+                </span>
+
+                <strong>
+                    @Model.Location
+                </strong>
+
+            </div>
+
+
+            <div class="ks-card"
+                 style="padding:20px;">
+
+                <span class="ks-small-label">
+                    GROWING AREA
+                </span>
+
+                <strong>
+                    @Model.LandSize
+                    @Model.LandUnit
+                </strong>
+
+            </div>
+
+
+            <div class="ks-card"
+                 style="padding:20px;">
+
+                <span class="ks-small-label">
+                    SOIL
+                </span>
+
+                <strong>
+                    @Model.SoilType
+                </strong>
+
+            </div>
+
+
+            <div class="ks-card"
+                 style="padding:20px;">
+
+                <span class="ks-small-label">
+                    WATER
+                </span>
+
+                <strong>
+                    @Model.WaterSource
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- CHECKLIST -->
+
+        <div style="
+            max-width:700px;
+            margin:0 auto 30px;
+            text-align:left;
+        ">
+
+            <h2>
+                Growing area checklist
+            </h2>
+
+
+            <div style="
+                padding:18px 0;
+                border-bottom:1px solid #e6eee5;
+            ">
+
+                🌱
+                <strong>
+                    Growing space identified
+                </strong>
+
+                <div style="
+                    margin-top:5px;
+                    color:#666;
+                ">
+                    Confirm where the crop will be grown.
+                </div>
+
+            </div>
+
+
+            <div style="
+                padding:18px 0;
+                border-bottom:1px solid #e6eee5;
+            ">
+
+                🌍
+                <strong>
+                    Soil information reviewed
+                </strong>
+
+                <div style="
+                    margin-top:5px;
+                    color:#666;
+                ">
+                    Your recorded soil information:
+                    @Model.SoilType
+                </div>
+
+            </div>
+
+
+            <div style="
+                padding:18px 0;
+                border-bottom:1px solid #e6eee5;
+            ">
+
+                💧
+                <strong>
+                    Water source reviewed
+                </strong>
+
+                <div style="
+                    margin-top:5px;
+                    color:#666;
+                ">
+                    Your recorded water source:
+                    @Model.WaterSource
+                </div>
+
+            </div>
+
+
+            <div style="
+                padding:18px 0;
+            ">
+
+                🚜
+                <strong>
+                    Land preparation
+                </strong>
+
+                <div style="
+                    margin-top:5px;
+                    color:#666;
+                ">
+                    Clear and prepare the growing space
+                    according to your crop and local conditions.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- COMPLETE -->
+
+        <form asp-controller="Home"
+              asp-action="CompleteFarmPreparation"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   name="farmId"
+                   value="@Model.Id" />
+
+            <button type="submit"
+                    class="ks-btn ks-btn-primary">
+
+                Mark Growing Area Ready ✓
+
+            </button>
+
+        </form>
+
+
+        @if (cropCount > 0)
+        {
+            <p style="
+                margin-top:18px;
+                color:#666;
+                font-size:14px;
+            ">
+                @cropCount crop(s) are already associated
+                with this farm.
+            </p>
+        }
+
+    </section>
+
+</div>

@@ -1,0 +1,454 @@
+﻿@model KrishiSahayAI.Models.WeatherViewModel
+
+@{
+    ViewData["Title"] = "Weather";
+
+    var cropName =
+        ViewBag.CropName as string;
+
+    if (string.IsNullOrWhiteSpace(cropName))
+    {
+        cropName = Model.Farm.Crop;
+    }
+
+    var hasCrop =
+        !string.IsNullOrWhiteSpace(cropName);
+
+    var displayCropName =
+        hasCrop
+            ? cropName
+            : "Crop not specified";
+
+    var cropId =
+        ViewBag.CropId as int?;
+}
+
+<div class="ks-page">
+
+    <div class="ks-page-header">
+        <div>
+
+            <div class="ks-eyebrow">
+                LIVE FARM WEATHER
+            </div>
+
+            <h1 class="ks-page-title">
+                Weather for your farm
+            </h1>
+
+            <p class="ks-page-subtitle">
+                Weather information for @Model.Farm.Location
+            </p>
+
+        </div>
+
+        <a href="/Home/Dashboard?id=@Model.Farm.Id"
+           class="ks-btn ks-btn-secondary">
+            ← Back to Farm
+        </a>
+    </div>
+
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="ks-card">
+
+            <div class="ks-card-body">
+
+                <div class="ks-alert">
+                    @Model.ErrorMessage
+                </div>
+
+                <div style="margin-top:20px;">
+
+                    <a href="/Weather/Index?farmId=@Model.Farm.Id@(cropId.HasValue ? $"&cropId={cropId.Value}" : "")"
+                       class="ks-btn ks-btn-primary">
+                        Try Again
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+
+    @if (Model.HasWeather && Model.Weather != null)
+    {
+        <!-- =====================================================
+             CURRENT WEATHER
+             ===================================================== -->
+
+        <div class="ks-card ks-weather-main-card">
+
+            <div class="ks-weather-location">
+
+                <div>
+
+                    <div class="ks-eyebrow">
+                        CURRENT CONDITIONS
+                    </div>
+
+                    <h2>
+                        @Model.Weather.LocationName
+                    </h2>
+
+                    <p>
+                        Updated
+                        @Model.Weather.RetrievedAt
+                            .ToLocalTime()
+                            .ToString("dd MMM yyyy, hh:mm tt")
+                    </p>
+
+                </div>
+
+                <div class="ks-weather-icon">
+                    @GetWeatherIcon(Model.Weather.WeatherCode)
+                </div>
+
+            </div>
+
+
+            <div class="ks-weather-temperature">
+                @Model.Weather.TemperatureC.ToString("0.#")°C
+            </div>
+
+
+            <div class="ks-weather-description">
+                @Model.Weather.WeatherDescription
+            </div>
+
+
+            <div class="ks-weather-stats">
+
+                <div class="ks-weather-stat">
+
+                    <span>
+                        Humidity
+                    </span>
+
+                    <strong>
+                        @Model.Weather.HumidityPercent.ToString("0")%
+                    </strong>
+
+                </div>
+
+
+                <div class="ks-weather-stat">
+
+                    <span>
+                        Wind
+                    </span>
+
+                    <strong>
+                        @Model.Weather.WindSpeedKmh.ToString("0.#") km/h
+                    </strong>
+
+                </div>
+
+
+                <div class="ks-weather-stat">
+
+                    <span>
+                        Rainfall
+                    </span>
+
+                    <strong>
+                        @Model.Weather.PrecipitationMm.ToString("0.#") mm
+                    </strong>
+
+                </div>
+
+
+                <div class="ks-weather-stat">
+
+                    <span>
+                        Day / Night
+                    </span>
+
+                    <strong>
+                        @(Model.Weather.IsDay
+                            ? "Day"
+                            : "Night")
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             FARM CONTEXT
+             ===================================================== -->
+
+        <div class="ks-section-heading">
+
+            <div>
+
+                <div class="ks-eyebrow">
+                    YOUR FARM
+                </div>
+
+                <h2>
+                    Weather context for @displayCropName
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="ks-card-grid">
+
+            <!-- CROP -->
+
+            <div class="ks-card">
+
+                <div class="ks-card-body">
+
+                    <div class="ks-eyebrow">
+                        CROP
+                    </div>
+
+                    <h3>
+                        @displayCropName
+                    </h3>
+
+                    @if (hasCrop &&
+                         Model.CropKnowledge != null)
+                    {
+                        <p>
+                            @Model.CropKnowledge.ClimateRequirements
+                        </p>
+                    }
+                    else if (!hasCrop)
+                    {
+                        <p>
+                            No crop has been specified for this farm yet.
+                            Add a crop in your farm profile to receive
+                            crop-specific weather guidance.
+                        </p>
+                    }
+                    else
+                    {
+                        <p>
+                            Crop-specific climate information is not
+                            available yet.
+                        </p>
+                    }
+
+                </div>
+
+            </div>
+
+
+            <!-- WATER -->
+
+            <div class="ks-card">
+
+                <div class="ks-card-body">
+
+                    <div class="ks-eyebrow">
+                        WATER
+                    </div>
+
+                    <h3>
+                        Farm Water Source
+                    </h3>
+
+                    @if (!string.IsNullOrWhiteSpace(
+                        Model.Farm.WaterSource))
+                    {
+                        <p>
+                            @Model.Farm.WaterSource
+                        </p>
+                    }
+                    else
+                    {
+                        <p>
+                            Water source has not been specified
+                            for this farm yet.
+                        </p>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             7 DAY FORECAST
+             ===================================================== -->
+
+        <div class="ks-section-heading">
+
+            <div>
+
+                <div class="ks-eyebrow">
+                    7-DAY FORECAST
+                </div>
+
+                <h2>
+                    Coming weather
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="ks-weather-forecast">
+
+            @foreach (var day in Model.Weather.Forecast)
+            {
+                <div class="ks-weather-day">
+
+                    <div class="ks-weather-day-date">
+
+                        @day.Date.ToString("ddd")
+
+                        <small>
+                            @day.Date.ToString("dd MMM")
+                        </small>
+
+                    </div>
+
+
+                    <div class="ks-weather-day-icon">
+                        @GetWeatherIcon(day.WeatherCode)
+                    </div>
+
+
+                    <div class="ks-weather-day-description">
+                        @day.WeatherDescription
+                    </div>
+
+
+                    <div class="ks-weather-day-temp">
+
+                        <strong>
+                            @day.MaxTemperatureC.ToString("0.#")°
+                        </strong>
+
+                        <span>
+                            @day.MinTemperatureC.ToString("0.#")°
+                        </span>
+
+                    </div>
+
+
+                    <div class="ks-weather-day-rain">
+
+                        Rain chance:
+                        @day.PrecipitationProbabilityPercent.ToString("0")%
+
+                    </div>
+
+
+                    <div class="ks-weather-day-rain">
+
+                        Rain:
+                        @day.PrecipitationMm.ToString("0.#") mm
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+
+        <!-- =====================================================
+             IMPORTANT NOTE
+             ===================================================== -->
+
+        <div class="ks-card ks-weather-note">
+
+            <div class="ks-card-body">
+
+                <div class="ks-eyebrow">
+                    IMPORTANT
+                </div>
+
+                <h3>
+                    Weather is one input, not the whole farm decision
+                </h3>
+
+                <p>
+                    KrishiSahay will combine weather information with your
+                    crop, soil, water and farm activity information before
+                    giving AI-based guidance.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             ACTIONS
+             ===================================================== -->
+
+        <div class="ks-action-row">
+
+            <a href="/Home/AskAI?farmId=@Model.Farm.Id@(cropId.HasValue ? $"&cropId={cropId.Value}" : "")"
+               class="ks-btn ks-btn-primary">
+                Ask KrishiSahay AI →
+            </a>
+
+
+            <a href="/Weather/Index?farmId=@Model.Farm.Id@(cropId.HasValue ? $"&cropId={cropId.Value}" : "")"
+               class="ks-btn ks-btn-secondary">
+                Refresh Weather
+            </a>
+
+        </div>
+
+
+        <div class="ks-weather-attribution">
+            Weather data provided by Open-Meteo.
+        </div>
+    }
+
+</div>
+
+
+@functions
+{
+    string GetWeatherIcon(int code)
+    {
+        return code switch
+        {
+            0 => "☀️",
+
+            1 or 2 => "🌤️",
+
+            3 => "☁️",
+
+            45 or 48 => "🌫️",
+
+            51 or 53 or 55 => "🌦️",
+
+            56 or 57 => "🌧️",
+
+            61 or 63 or 65 => "🌧️",
+
+            66 or 67 => "🌧️",
+
+            71 or 73 or 75 or 77 => "❄️",
+
+            80 or 81 or 82 => "🌦️",
+
+            85 or 86 => "🌨️",
+
+            95 or 96 or 99 => "⛈️",
+
+            _ => "🌤️"
+        };
+    }
+}

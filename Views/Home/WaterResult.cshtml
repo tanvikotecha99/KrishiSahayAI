@@ -1,0 +1,366 @@
+﻿@model KrishiSahayAI.Models.WaterAssessmentViewModel
+
+@{
+    ViewData["Title"] = "Water Assessment Result";
+}
+
+<div class="ks-soil-page">
+
+    <!-- HEADER -->
+
+    <section class="ks-soil-hero">
+
+        <div>
+
+            <span class="ks-small-label">
+                WATER ASSESSMENT
+            </span>
+
+            <h1>
+                Your Water Assessment 💧
+            </h1>
+
+            <p>
+                Here's a simple summary of your farm's current
+                water and irrigation situation.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- FARM CARD -->
+
+    <section class="ks-soil-farm-card">
+
+        <div class="ks-soil-farm-icon">
+            💧
+        </div>
+
+        <div>
+
+            <span>
+                YOUR FARM
+            </span>
+
+            <h2>
+                @Model.Farm.Crop
+            </h2>
+
+            <p>
+                📍 @Model.Farm.Location
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- WATER SUMMARY -->
+
+    <section class="ks-soil-result-card">
+
+        <div class="ks-soil-result-header">
+
+            <span class="ks-small-label">
+                YOUR WATER PROFILE
+            </span>
+
+            <h2>
+                Water & Irrigation
+            </h2>
+
+        </div>
+
+
+        <div class="ks-soil-result-grid">
+
+            <div class="ks-soil-result-item">
+
+                <span>
+                    💧 Water Source
+                </span>
+
+                <strong>
+                    @Model.Assessment.WaterSource
+                </strong>
+
+            </div>
+
+
+            <div class="ks-soil-result-item">
+
+                <span>
+                    🚰 Water Availability
+                </span>
+
+                <strong>
+                    @Model.Assessment.WaterAvailability
+                </strong>
+
+            </div>
+
+
+            <div class="ks-soil-result-item">
+
+                <span>
+                    🌱 Irrigation Method
+                </span>
+
+                <strong>
+                    @Model.Assessment.IrrigationMethod
+                </strong>
+
+            </div>
+
+
+            <div class="ks-soil-result-item">
+
+                <span>
+                    📅 Irrigation Frequency
+                </span>
+
+                <strong>
+                    @(
+                        string.IsNullOrWhiteSpace(
+                            Model.Assessment.IrrigationFrequency)
+                            ? "Not specified"
+                            : Model.Assessment.IrrigationFrequency
+                    )
+                </strong>
+
+            </div>
+
+
+            <div class="ks-soil-result-item">
+
+                <span>
+                    🧪 Water Quality
+                </span>
+
+                <strong>
+                    @(
+                        string.IsNullOrWhiteSpace(
+                            Model.Assessment.WaterQualityKnowledge)
+                            ? "Not specified"
+                            : Model.Assessment.WaterQualityKnowledge
+                    )
+                </strong>
+
+            </div>
+
+
+            <div class="ks-soil-result-item">
+
+                <span>
+                    🌧️ Drainage
+                </span>
+
+                <strong>
+                    @(
+                        string.IsNullOrWhiteSpace(
+                            Model.Assessment.DrainageCondition)
+                            ? "Not specified"
+                            : Model.Assessment.DrainageCondition
+                    )
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ASSESSMENT -->
+
+    <section class="ks-soil-result-card">
+
+        <div class="ks-soil-result-header">
+
+            <span class="ks-small-label">
+                KRISHISAHAY INSIGHT
+            </span>
+
+            <h2>
+                What your answers tell us
+            </h2>
+
+        </div>
+
+
+        <div class="ks-soil-result-text">
+
+            @foreach (
+                var paragraph in
+                Model.Assessment.Result.Split(
+                    new[] { "\r\n\r\n", "\n\n" },
+                    StringSplitOptions.RemoveEmptyEntries))
+            {
+                <p>
+                    @paragraph
+                </p>
+            }
+
+        </div>
+
+    </section>
+
+
+    <!-- CURRENT PROBLEM -->
+
+    @if (!string.IsNullOrWhiteSpace(
+        Model.Assessment.RecentWaterProblem))
+    {
+        <section class="ks-soil-result-card">
+
+            <div class="ks-soil-result-header">
+
+                <span class="ks-small-label">
+                    WATER CHECK
+                </span>
+
+                <h2>
+                    Current water concern
+                </h2>
+
+            </div>
+
+
+            <div class="ks-soil-result-highlight">
+
+                <span class="ks-soil-result-highlight-icon">
+                    ⚠️
+                </span>
+
+                <div>
+
+                    <strong>
+                        @Model.Assessment.RecentWaterProblem
+                    </strong>
+
+                    <p>
+                        Keep monitoring this condition and consider
+                        getting local agricultural guidance if the
+                        problem continues or affects the crop.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+    }
+
+
+    <!-- CROP GUIDANCE -->
+
+    @if (Model.CropKnowledge != null)
+    {
+        <section class="ks-soil-result-card">
+
+            <div class="ks-soil-result-header">
+
+                <span class="ks-small-label">
+                    @Model.CropKnowledge.CropName
+                </span>
+
+                <h2>
+                    Crop Water Guidance
+                </h2>
+
+            </div>
+
+
+            <div class="ks-soil-guidance-grid">
+
+                <div class="ks-soil-guidance-item">
+
+                    <span>
+                        💧 Water needs
+                    </span>
+
+                    <p>
+                        @Model.CropKnowledge.WaterRequirements
+                    </p>
+
+                </div>
+
+
+                <div class="ks-soil-guidance-item">
+
+                    <span>
+                        🌱 Growing guidance
+                    </span>
+
+                    <p>
+                        @Model.CropKnowledge.GrowthGuidance
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+    }
+
+
+    <!-- AI NEXT STEP -->
+
+    <section class="ks-ai-dashboard-card">
+
+        <div class="ks-ai-dashboard-content">
+
+            <span class="ks-small-label">
+                NEXT STEP
+            </span>
+
+            <h2>
+                Ask KrishiSahay AI about your water 💧
+            </h2>
+
+            <p>
+                Your water assessment is now available to the AI.
+                Ask questions about irrigation, water availability,
+                drainage or your @Model.Farm.Crop crop.
+            </p>
+
+            <a href="/Home/AskAI?farmId=@Model.Farm.Id"
+               class="ks-btn ks-btn-primary">
+
+                Ask KrishiSahay AI →
+
+            </a>
+
+        </div>
+
+        <div class="ks-ai-dashboard-icon">
+            🤖
+        </div>
+
+    </section>
+
+
+    <!-- ACTIONS -->
+
+    <section class="ks-soil-actions">
+
+     <a asp-controller="Home"
+   asp-action="WaterAssessment"
+   asp-route-farmId="@Model.Farm.Id"
+   class="ks-btn ks-btn-secondary">
+    Retake Water Assessment
+</a>
+
+<a asp-controller="Home"
+   asp-action="Dashboard"
+   asp-route-id="@Model.Farm.Id"
+   class="ks-btn ks-btn-primary">
+    Back to My Farm →
+</a>
+
+
+    </section>
+
+</div>

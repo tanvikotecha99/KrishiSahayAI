@@ -1,0 +1,1039 @@
+﻿@model KrishiSahayAI.Models.WaterAssessmentViewModel
+
+@{
+    ViewData["Title"] = "Water Assessment";
+}
+
+<div class="ks-soil-page">
+
+    <!-- HEADER -->
+
+    <section class="ks-soil-hero">
+
+        <div>
+
+            <span class="ks-small-label">
+                WATER CHECK
+            </span>
+
+            <h1>
+                Understand Your Farm Water 💧
+            </h1>
+
+            <p>
+                Tell us about your water source, irrigation and drainage.
+                KrishiSahay will help you understand your current water situation.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- FARM SUMMARY -->
+
+    <section class="ks-soil-farm-card">
+
+        <div class="ks-soil-farm-icon">
+            🌾
+        </div>
+
+        <div>
+
+            <span>
+                YOUR FARM
+            </span>
+
+            <h2>
+                @Model.Farm.Crop
+            </h2>
+
+            <p>
+                📍 @Model.Farm.Location
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- WATER FORM -->
+
+ <form action="/Home/WaterAssessment"
+      method="post"
+      class="ks-soil-form">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly"
+     class="text-danger"
+     style="margin-bottom:20px;">
+</div>
+
+        <input type="hidden"
+               asp-for="Farm.Id" />
+
+
+        <!-- WATER SOURCE -->
+
+        <section class="ks-soil-form-card">
+
+            <div class="ks-soil-question-number">
+                01
+            </div>
+
+            <div class="ks-soil-question">
+
+                <h2>
+                    Where does your farm water come from?
+                </h2>
+
+                <p>
+                    Choose the main source you use for irrigation.
+                </p>
+
+
+                <div class="ks-option-grid">
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.WaterSource"
+                               value="Borewell" />
+
+                        <span class="ks-option-icon">
+                            💧
+                        </span>
+
+                        <strong>
+                            Borewell
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.WaterSource"
+                               value="Open Well" />
+
+                        <span class="ks-option-icon">
+                            🪣
+                        </span>
+
+                        <strong>
+                            Open Well
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.WaterSource"
+                               value="Canal" />
+
+                        <span class="ks-option-icon">
+                            🌊
+                        </span>
+
+                        <strong>
+                            Canal
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.WaterSource"
+                               value="Rainwater" />
+
+                        <span class="ks-option-icon">
+                            🌧️
+                        </span>
+
+                        <strong>
+                            Rainwater
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.WaterSource"
+                               value="River" />
+
+                        <span class="ks-option-icon">
+                            🏞️
+                        </span>
+
+                        <strong>
+                            River
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.WaterSource"
+                               value="Other" />
+
+                        <span class="ks-option-icon">
+                            🚰
+                        </span>
+
+                        <strong>
+                            Other
+                        </strong>
+
+                    </label>
+
+                </div>
+
+                <span asp-validation-for="Assessment.WaterSource"
+                      class="text-danger">
+                </span>
+
+            </div>
+        </section>
+
+
+        <!-- WATER AVAILABILITY -->
+
+        <section class="ks-soil-form-card">
+
+            <div class="ks-soil-question-number">
+                02
+            </div>
+
+            <div class="ks-soil-question">
+
+                <h2>
+                    How available is water during the season?
+                </h2>
+
+                <p>
+                    Think about how reliably you can get water when the crop needs it.
+                </p>
+
+
+                <div class="ks-option-grid">
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.WaterAvailability"
+                               value="Regular" />
+
+                        <span class="ks-option-icon">
+                            ✅
+                        </span>
+
+                        <strong>
+                            Regular
+                        </strong>
+
+                        <small>
+                            Water is usually available
+                        </small>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.WaterAvailability"
+                               value="Seasonal" />
+
+                        <span class="ks-option-icon">
+                            📅
+                        </span>
+
+                        <strong>
+                            Seasonal
+                        </strong>
+
+                        <small>
+                            Availability changes by season
+                        </small>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.WaterAvailability"
+                               value="Limited" />
+
+                        <span class="ks-option-icon">
+                            ⚠️
+                        </span>
+
+                        <strong>
+                            Limited
+                        </strong>
+
+                        <small>
+                            Water is often difficult to access
+                        </small>
+
+                    </label>
+
+                </div>
+
+                <span asp-validation-for="Assessment.WaterAvailability"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- IRRIGATION METHOD -->
+
+        <section class="ks-soil-form-card">
+
+            <div class="ks-soil-question-number">
+                03
+            </div>
+
+            <div class="ks-soil-question">
+
+                <h2>
+                    How do you irrigate your crop?
+                </h2>
+
+                <p>
+                    Select the method you normally use.
+                </p>
+
+
+                <div class="ks-option-grid">
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.IrrigationMethod"
+                               value="Drip" />
+
+                        <span class="ks-option-icon">
+                            💧
+                        </span>
+
+                        <strong>
+                            Drip
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.IrrigationMethod"
+                               value="Sprinkler" />
+
+                        <span class="ks-option-icon">
+                            💦
+                        </span>
+
+                        <strong>
+                            Sprinkler
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.IrrigationMethod"
+                               value="Flood" />
+
+                        <span class="ks-option-icon">
+                            🌊
+                        </span>
+
+                        <strong>
+                            Flood
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.IrrigationMethod"
+                               value="Furrow" />
+
+                        <span class="ks-option-icon">
+                            🌱
+                        </span>
+
+                        <strong>
+                            Furrow
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.IrrigationMethod"
+                               value="Manual" />
+
+                        <span class="ks-option-icon">
+                            🪣
+                        </span>
+
+                        <strong>
+                            Manual
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.IrrigationMethod"
+                               value="Other" />
+
+                        <span class="ks-option-icon">
+                            🚜
+                        </span>
+
+                        <strong>
+                            Other
+                        </strong>
+
+                    </label>
+
+                </div>
+
+                <span asp-validation-for="Assessment.IrrigationMethod"
+                      class="text-danger">
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- IRRIGATION FREQUENCY -->
+
+        <section class="ks-soil-form-card">
+
+            <div class="ks-soil-question-number">
+                04
+            </div>
+
+            <div class="ks-soil-question">
+
+                <h2>
+                    How often do you usually irrigate?
+                </h2>
+
+                <p>
+                    Select the option closest to your current practice.
+                </p>
+
+
+                <div class="ks-option-grid">
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.IrrigationFrequency"
+                               value="Daily" />
+
+                        <span class="ks-option-icon">
+                            📆
+                        </span>
+
+                        <strong>
+                            Daily
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.IrrigationFrequency"
+                               value="Every 2-3 days" />
+
+                        <span class="ks-option-icon">
+                            🌱
+                        </span>
+
+                        <strong>
+                            Every 2–3 days
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.IrrigationFrequency"
+                               value="Weekly" />
+
+                        <span class="ks-option-icon">
+                            📅
+                        </span>
+
+                        <strong>
+                            Weekly
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.IrrigationFrequency"
+                               value="As needed" />
+
+                        <span class="ks-option-icon">
+                            👀
+                        </span>
+
+                        <strong>
+                            As needed
+                        </strong>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- WATER QUALITY -->
+
+        <section class="ks-soil-form-card">
+
+            <div class="ks-soil-question-number">
+                05
+            </div>
+
+            <div class="ks-soil-question">
+
+                <h2>
+                    Do you know about your water quality?
+                </h2>
+
+                <p>
+                    Water quality can be important for irrigation and crop health.
+                </p>
+
+
+                <div class="ks-option-grid">
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.WaterQualityKnowledge"
+                               value="Tested" />
+
+                        <span class="ks-option-icon">
+                            🧪
+                        </span>
+
+                        <strong>
+                            Tested
+                        </strong>
+
+                        <small>
+                            I have a water test
+                        </small>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.WaterQualityKnowledge"
+                               value="Known" />
+
+                        <span class="ks-option-icon">
+                            📋
+                        </span>
+
+                        <strong>
+                            I know it
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.WaterQualityKnowledge"
+                               value="Unknown" />
+
+                        <span class="ks-option-icon">
+                            ❓
+                        </span>
+
+                        <strong>
+                            I don't know
+                        </strong>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- DRAINAGE -->
+
+        <section class="ks-soil-form-card">
+
+            <div class="ks-soil-question-number">
+                06
+            </div>
+
+            <div class="ks-soil-question">
+
+                <h2>
+                    How is drainage in your field?
+                </h2>
+
+                <p>
+                    Think about what happens after irrigation or heavy rain.
+                </p>
+
+
+                <div class="ks-option-grid">
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.DrainageCondition"
+                               value="Good" />
+
+                        <span class="ks-option-icon">
+                            ✅
+                        </span>
+
+                        <strong>
+                            Good
+                        </strong>
+
+                        <small>
+                            Water drains away well
+                        </small>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.DrainageCondition"
+                               value="Moderate" />
+
+                        <span class="ks-option-icon">
+                            ⚖️
+                        </span>
+
+                        <strong>
+                            Moderate
+                        </strong>
+
+                        <small>
+                            Some water remains
+                        </small>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.DrainageCondition"
+                               value="Poor" />
+
+                        <span class="ks-option-icon">
+                            ⚠️
+                        </span>
+
+                        <strong>
+                            Poor
+                        </strong>
+
+                        <small>
+                            Water often stands
+                        </small>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RECENT PROBLEM -->
+
+        <section class="ks-soil-form-card">
+
+            <div class="ks-soil-question-number">
+                07
+            </div>
+
+            <div class="ks-soil-question">
+
+                <h2>
+                    Are you facing any water-related problem?
+                </h2>
+
+                <p>
+                    Select the problem that is closest to your situation.
+                </p>
+
+
+                <div class="ks-option-grid">
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.RecentWaterProblem"
+                               value="No problem" />
+
+                        <span class="ks-option-icon">
+                            👍
+                        </span>
+
+                        <strong>
+                            No problem
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.RecentWaterProblem"
+                               value="Water shortage" />
+
+                        <span class="ks-option-icon">
+                            💧
+                        </span>
+
+                        <strong>
+                            Water shortage
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.RecentWaterProblem"
+                               value="Waterlogging" />
+
+                        <span class="ks-option-icon">
+                            🌊
+                        </span>
+
+                        <strong>
+                            Waterlogging
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.RecentWaterProblem"
+                               value="Poor water quality" />
+
+                        <span class="ks-option-icon">
+                            🧪
+                        </span>
+
+                        <strong>
+                            Poor water quality
+                        </strong>
+
+                    </label>
+
+
+                    <label class="ks-option-card">
+
+                        <input type="radio"
+                               asp-for="Assessment.RecentWaterProblem"
+                               value="Uneven irrigation" />
+
+                        <span class="ks-option-icon">
+                            🌱
+                        </span>
+
+                        <strong>
+                            Uneven irrigation
+                        </strong>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </section>
+<!-- SUBMIT / ACTIONS -->
+
+<section class="ks-water-actions-card">
+
+    <div class="ks-water-ready-content">
+
+        <span class="ks-small-label">
+            READY?
+        </span>
+
+        <h2>
+            Let's understand your water situation.
+        </h2>
+
+        <p>
+            Your answers will be used to create a simple
+            water assessment for your farm.
+        </p>
+
+    </div>
+  
+</section>
+
+
+<!-- ACTION BUTTONS -->
+
+<div class="ks-water-action-buttons">
+
+    <a href="/Home/Dashboard?id=@Model.Farm.Id"
+       class="ks-water-btn ks-water-btn-back">
+
+        <span class="ks-water-btn-arrow">←</span>
+        <span>Back to My Farm</span>
+
+    </a>
+
+
+    <button type="submit"
+            class="ks-water-btn ks-water-btn-primary" >
+
+        <span>Assess My Water</span>
+        <span class="ks-water-btn-arrow">→</span>
+
+    </button>
+    
+</div>
+
+</form>
+
+
+<style>
+
+    /* =========================================================
+       WATER ASSESSMENT - FINAL ACTION AREA
+       ========================================================= */
+
+    .ks-water-actions-card {
+        margin-top: 36px;
+        padding: 34px 38px;
+        border-radius: 24px;
+        background: linear-gradient(
+            135deg,
+            #f1faef 0%,
+            #f8fcf6 100%
+        );
+        border: 1px solid rgba(47, 125, 50, 0.08);
+        box-sizing: border-box;
+    }
+
+
+    .ks-water-ready-content {
+        max-width: 850px;
+    }
+
+
+    .ks-water-ready-content .ks-small-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--ks-green);
+        font-weight: 800;
+        letter-spacing: 0.08em;
+    }
+
+
+    .ks-water-ready-content h2 {
+        margin: 0 0 10px;
+        font-size: 30px;
+        line-height: 1.25;
+        color: var(--ks-dark);
+    }
+
+
+    .ks-water-ready-content p {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--ks-text);
+    }
+
+
+    /* =========================================================
+       ACTION BUTTONS
+       ========================================================= */
+
+    .ks-water-action-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 22px;
+    }
+
+
+    .ks-water-btn {
+        min-height: 62px;
+        width: 100%;
+        box-sizing: border-box;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+
+        padding: 16px 24px;
+
+        border-radius: 16px;
+
+        font-size: 17px;
+        font-weight: 750;
+
+        text-decoration: none;
+        cursor: pointer;
+
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            background 0.2s ease;
+    }
+
+
+    /* BACK BUTTON */
+
+    .ks-water-btn-back {
+        background: #ffffff;
+        color: var(--ks-green);
+        border: 2px solid var(--ks-green);
+    }
+
+
+    .ks-water-btn-back:hover {
+        background: #f1faef;
+        color: var(--ks-dark-green);
+
+        transform: translateY(-2px);
+
+        box-shadow:
+            0 8px 20px rgba(47, 125, 50, 0.10);
+    }
+
+
+    /* PRIMARY BUTTON */
+
+    .ks-water-btn-primary {
+        background: var(--ks-green);
+        color: #ffffff;
+        border: 2px solid var(--ks-green);
+
+        box-shadow:
+            0 10px 24px rgba(47, 125, 50, 0.20);
+    }
+
+
+    .ks-water-btn-primary:hover {
+        background: var(--ks-dark-green);
+        border-color: var(--ks-dark-green);
+        color: #ffffff;
+
+        transform: translateY(-2px);
+
+        box-shadow:
+            0 14px 28px rgba(47, 125, 50, 0.25);
+    }
+
+
+    .ks-water-btn-arrow {
+        font-size: 25px;
+        line-height: 1;
+        font-weight: 400;
+    }
+
+
+    /* =========================================================
+       MOBILE
+       ========================================================= */
+
+    @@media (max-width: 700px) {
+
+        .ks-water-actions-card {
+            padding: 28px 22px;
+            border-radius: 20px;
+        }
+
+
+        .ks-water-ready-content h2 {
+            font-size: 24px;
+        }
+
+
+        .ks-water-action-buttons {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+
+        .ks-water-btn {
+            min-height: 58px;
+            font-size: 16px;
+        }
+
+    }
+
+</style>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

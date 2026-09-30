@@ -1,0 +1,515 @@
+﻿@model KrishiSahayAI.Models.FarmCrop
+
+@{
+    ViewData["Title"] = "Edit Crop";
+
+    var farm =
+        ViewBag.Farm as KrishiSahayAI.Models.FarmProfile;
+
+    var allocatedArea =
+        (double)(ViewBag.AllocatedArea ?? 0d);
+
+    var remainingArea =
+        (double)(ViewBag.RemainingArea ?? 0d);
+
+    var areaUnit =
+        (string)(ViewBag.AreaUnit
+            ?? farm?.LandUnit
+            ?? "Acre");
+}
+
+<div class="ks-page">
+
+    <div class="ks-container">
+
+        <!-- HEADER -->
+
+        <div class="ks-page-header">
+
+            <div>
+
+                <div class="ks-eyebrow">
+                    🌱 YOUR FARM
+                </div>
+
+                <h1>
+                    Edit Crop
+                </h1>
+
+                <p>
+                    Update the crop information
+                    for
+                    <strong>
+                        @(farm?.FarmerName ?? "your farm")'s Farm
+                    </strong>.
+                </p>
+
+            </div>
+
+            <div>
+
+                <a asp-controller="Home"
+                   asp-action="MyCrops"
+                   asp-route-farmId="@Model.FarmId"
+                   class="ks-btn ks-btn-outline">
+
+                    ← Back to Crops
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- AREA SUMMARY -->
+
+        <div class="ks-card"
+             style="margin-bottom:25px;">
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:20px;
+                flex-wrap:wrap;">
+
+                <div>
+
+                    <div class="ks-eyebrow">
+                        FARM AREA
+                    </div>
+
+                    <h2 style="margin:5px 0;">
+
+                        @(farm?.LandSize.ToString("0.##"))
+                        @farm?.LandUnit
+
+                    </h2>
+
+                    <p style="margin:0;">
+                        Total farm size
+                    </p>
+
+                </div>
+
+
+                <div>
+
+                    <div style="
+                        font-size:14px;
+                        color:#666;">
+
+                        Other crops allocated
+
+                    </div>
+
+                    <strong style="
+                        font-size:24px;">
+
+                        @allocatedArea.ToString("0.##")
+                        @areaUnit
+
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <div style="
+                        font-size:14px;
+                        color:#666;">
+
+                        Available for this crop
+
+                    </div>
+
+                    <strong id="remainingArea"
+                            style="
+                            font-size:24px;">
+
+                        @remainingArea.ToString("0.##")
+
+                    </strong>
+
+                    <div>
+                        @areaUnit
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FORM -->
+
+        <div class="ks-card">
+
+            <form asp-controller="Home"
+                  asp-action="EditCrop"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       asp-for="Id" />
+
+                <input type="hidden"
+                       asp-for="FarmId" />
+
+                <input type="hidden"
+                       asp-for="UserId" />
+
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger"
+                     style="margin-bottom:20px;">
+                </div>
+
+
+                <div class="row g-4">
+
+                    <!-- CROP NAME -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="CropName"
+                               class="form-label">
+
+                            Crop Name
+
+                        </label>
+
+                        <input asp-for="CropName"
+                               class="form-control" />
+
+                        <span asp-validation-for="CropName"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- VARIETY -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="Variety"
+                               class="form-label">
+
+                            Variety
+
+                        </label>
+
+                        <input asp-for="Variety"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <!-- SEASON -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="Season"
+                               class="form-label">
+
+                            Season
+
+                        </label>
+
+                        <select asp-for="Season"
+                                class="form-select">
+
+                            <option value="">
+                                Select season
+                            </option>
+
+                            <option value="Kharif">
+                                Kharif
+                            </option>
+
+                            <option value="Rabi">
+                                Rabi
+                            </option>
+
+                            <option value="Zaid">
+                                Zaid
+                            </option>
+
+                            <option value="Summer">
+                                Summer
+                            </option>
+
+                            <option value="Winter">
+                                Winter
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- DATE -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="SowingDate"
+                               class="form-label">
+
+                            Sowing Date
+
+                        </label>
+
+                        <input asp-for="SowingDate"
+                               type="date"
+                               class="form-control" />
+
+                    </div>
+
+
+                    <!-- AREA -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="Area"
+                               class="form-label">
+
+                            Crop Area
+
+                        </label>
+
+                        <input asp-for="Area"
+                               id="cropArea"
+                               type="number"
+                               step="0.01"
+                               min="0"
+                               class="form-control" />
+
+                        <span asp-validation-for="Area"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- AREA UNIT -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="AreaUnit"
+                               class="form-label">
+
+                            Area Unit
+
+                        </label>
+
+                        <select asp-for="AreaUnit"
+                                id="cropAreaUnit"
+                                class="form-select">
+
+                            <option value="Acre">
+                                Acre
+                            </option>
+
+                            <option value="Hectare">
+                                Hectare
+                            </option>
+
+                            <option value="Bigha">
+                                Bigha
+                            </option>
+
+                            <option value="Guntha">
+                                Guntha
+                            </option>
+
+                            <option value="Square Meter">
+                                Square Meter
+                            </option>
+
+                            <option value="Square Feet">
+                                Square Feet
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- ALERT -->
+
+                    <div class="col-12">
+
+                        <div id="areaClientAlert"
+                             class="alert alert-danger"
+                             style="display:none;">
+                        </div>
+
+                    </div>
+
+
+                    <!-- NOTES -->
+
+                    <div class="col-12">
+
+                        <label asp-for="Notes"
+                               class="form-label">
+
+                            Notes
+
+                        </label>
+
+                        <textarea asp-for="Notes"
+                                  class="form-control"
+                                  rows="4">
+                        </textarea>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BUTTONS -->
+
+                <div style="
+                    margin-top:30px;
+                    display:flex;
+                    gap:12px;
+                    flex-wrap:wrap;">
+
+                    <button type="submit"
+                            id="saveCropButton"
+                            class="ks-btn ks-btn-primary">
+
+                        💾 Save Changes
+
+                    </button>
+
+                    <a asp-controller="Home"
+                       asp-action="MyCrops"
+                       asp-route-farmId="@Model.FarmId"
+                       class="ks-btn ks-btn-outline">
+
+                        Cancel
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        (() => {
+
+            const available =
+                @Html.Raw(
+                    System.Text.Json.JsonSerializer.Serialize(
+                        remainingArea
+                    )
+                );
+
+            const areaInput =
+                document.getElementById(
+                    "cropArea"
+                );
+
+            const alertBox =
+                document.getElementById(
+                    "areaClientAlert"
+                );
+
+            const button =
+                document.getElementById(
+                    "saveCropButton"
+                );
+
+
+            function checkArea() {
+
+                const value =
+                    parseFloat(
+                        areaInput.value || "0"
+                    );
+
+
+                /*
+                 * This client-side check is primarily
+                 * useful when editing using the same
+                 * area unit as the farm.
+                 *
+                 * The server remains the final
+                 * authority.
+                 */
+
+                if (value > available &&
+                    "@farm?.LandUnit"
+                        .toLowerCase() ===
+                    "@Model.AreaUnit"
+                        .toLowerCase()) {
+
+                    alertBox.style.display =
+                        "block";
+
+                    alertBox.textContent =
+                        `⚠️ You only have ${available.toFixed(2)} @areaUnit available for this crop.`;
+
+                    button.disabled =
+                        true;
+
+                }
+                else {
+
+                    alertBox.style.display =
+                        "none";
+
+                    alertBox.textContent =
+                        "";
+
+                    button.disabled =
+                        false;
+
+                }
+
+            }
+
+
+            areaInput.addEventListener(
+                "input",
+                checkArea
+            );
+
+
+            document.getElementById(
+                "cropAreaUnit"
+            ).addEventListener(
+                "change",
+                checkArea
+            );
+
+
+            checkArea();
+
+        })();
+
+    </script>
+}

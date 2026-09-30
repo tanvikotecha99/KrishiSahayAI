@@ -1,0 +1,1440 @@
+﻿@model KrishiSahayAI.Models.AiChatViewModel
+
+@{
+    ViewData["Title"] = "Ask KrishiSahay AI";
+
+    var hasFarm =
+        Model.SelectedFarmId.HasValue &&
+        Model.Farm.Id > 0;
+
+    var hasCrop =
+        Model.SelectedCropId.HasValue &&
+        Model.SelectedCrop != null;
+
+    var cropName =
+        hasCrop
+            ? Model.SelectedCrop!.CropName
+            : "your crop";
+}
+
+<div class="ks-ai-page">
+
+    <!-- =========================================================
+         HERO
+    ========================================================== -->
+
+    <section class="ks-ai-hero">
+
+        <div class="ks-ai-hero-content">
+
+            <div class="ks-ai-badge">
+                🤖 AI FARM ASSISTANT
+            </div>
+
+            <h1>
+                Ask KrishiSahay AI
+            </h1>
+
+            <p>
+                Ask general farming questions or get guidance
+                based on your farm, crop, soil, water and weather.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         QUESTION TYPE
+    ========================================================== -->
+
+    <section class="ks-ai-chat-card">
+
+        <div class="ks-ai-chat-header">
+
+            <div class="ks-ai-icon">
+                ✨
+            </div>
+
+            <div>
+
+                <h2>
+                    How can KrishiSahay help?
+                </h2>
+
+                <p>
+                    Choose whether you want general farming guidance
+                    or advice for one of your farms and crops.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="ks-ai-mode-grid">
+
+            <!-- GENERAL -->
+
+            <a asp-controller="Home"
+               asp-action="AskAI"
+               class="ks-ai-mode-card @(Model.IsGeneralQuestion ? "ks-ai-mode-selected" : "")">
+
+                <div class="ks-ai-mode-icon">
+                    🌐
+                </div>
+
+                <div>
+
+                    <h3>
+                        General Farming Question
+                    </h3>
+
+                    <p>
+                        Ask about farming, soil, irrigation,
+                        crops, weather, pests or general
+                        agricultural practices.
+                    </p>
+
+                </div>
+
+            </a>
+
+
+           <!-- FARM SPECIFIC -->
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <a asp-controller="Home"
+       asp-action="AskAI"
+       class="ks-ai-mode-card @(hasFarm ? "ks-ai-mode-selected" : "")">
+
+        <div class="ks-ai-mode-icon">
+            🌱
+        </div>
+
+        <div>
+
+            <h3>
+                Farm-specific Question
+            </h3>
+
+            <p>
+                Select your farm and crop to give the AI
+                more specific context.
+            </p>
+
+        </div>
+
+    </a>
+}
+else
+{
+    <a asp-area="Identity"
+       asp-page="/Account/Login"
+       asp-route-returnUrl="/Home/AskAI"
+       class="ks-ai-mode-card">
+
+        <div class="ks-ai-mode-icon">
+            🌱
+        </div>
+
+        <div>
+
+            <h3>
+                Farm-specific Question
+            </h3>
+
+            <p>
+                Login to select your farm and crop
+                for personalized AI guidance.
+            </p>
+
+        </div>
+
+    </a>
+}
+
+        </div>
+
+
+        <!-- =====================================================
+             FARM / CROP SELECTION
+        ====================================================== -->
+
+        <form asp-controller="Home"
+              asp-action="AskAI"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+
+            <div class="ks-ai-selection-grid">
+
+                <!-- FARM -->
+
+                <div class="ks-ai-question-box">
+
+                    <label for="SelectedFarmId">
+                        🌱 Select Farm
+                    </label>
+
+                    <select id="SelectedFarmId"
+                            name="SelectedFarmId"
+                            class="form-control"
+                            onchange="farmChanged(this.value)">
+
+                        <option value="">
+                            -- General Farming Question --
+                        </option>
+
+                        @foreach (var farm in Model.AvailableFarms)
+                        {
+                            var farmLabel =
+                                string.IsNullOrWhiteSpace(farm.FarmerName)
+                                    ? $"Farm #{farm.Id}"
+                                    : $"{farm.FarmerName}'s Farm";
+
+                            if (!string.IsNullOrWhiteSpace(farm.Location))
+                            {
+                                farmLabel += $" — {farm.Location}";
+                            }
+
+                            if (Model.SelectedFarmId == farm.Id)
+                            {
+                                <option value="@farm.Id" selected>
+                                    @farmLabel
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@farm.Id">
+                                    @farmLabel
+                                </option>
+                            }
+                        }
+
+                    </select>
+
+                    <small>
+                        Select a farm for personalized guidance.
+                    </small>
+
+                </div>
+
+
+                <!-- CROP -->
+
+                <div class="ks-ai-question-box">
+
+                    <label for="SelectedCropId">
+                        🌾 Select Crop
+                    </label>
+
+                    @if (hasFarm)
+                    {
+                        <select id="SelectedCropId"
+        name="SelectedCropId"
+        class="form-control"
+        onchange="cropChanged(this.value)">
+
+                            <option value="">
+                                -- Select a Crop --
+                            </option>
+
+                            @foreach (var crop in Model.AvailableCrops)
+                            {
+                                if (Model.SelectedCropId == crop.Id)
+                                {
+                                    <option value="@crop.Id" selected>
+                                        @crop.CropName
+                                        @(
+                                            string.IsNullOrWhiteSpace(crop.Variety)
+                                                ? ""
+                                                : $" — {crop.Variety}"
+                                        )
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@crop.Id">
+                                        @crop.CropName
+                                        @(
+                                            string.IsNullOrWhiteSpace(crop.Variety)
+                                                ? ""
+                                                : $" — {crop.Variety}"
+                                        )
+                                    </option>
+                                }
+                            }
+
+                        </select>
+
+                        <small>
+                            Choose the crop you want to ask about.
+                        </small>
+                    }
+                    else
+                    {
+                        <select id="SelectedCropId"
+                                name="SelectedCropId"
+                                class="form-control"
+                                disabled>
+
+                            <option>
+                                Select a farm first
+                            </option>
+
+                        </select>
+
+                        <small>
+                            Crop selection is available for
+                            farm-specific questions.
+                        </small>
+                    }
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 SELECTED CONTEXT
+            ================================================== -->
+
+            @if (hasFarm)
+            {
+                <section class="ks-ai-farm-card">
+
+                    <div>
+
+                        <span class="ks-ai-label">
+                            SELECTED FARM
+                        </span>
+
+                        <h2>
+                            🌱
+                            @(
+                                string.IsNullOrWhiteSpace(Model.Farm.FarmerName)
+                                    ? $"Farm #{Model.Farm.Id}"
+                                    : $"{Model.Farm.FarmerName}'s Farm"
+                            )
+                        </h2>
+
+                        <p>
+                            📍 @Model.Farm.Location
+                        </p>
+
+                    </div>
+
+
+                    <div class="ks-ai-farm-details">
+
+                        <div>
+
+                            <span>CROP</span>
+
+                            <strong>
+                                @(hasCrop
+                                    ? Model.SelectedCrop!.CropName
+                                    : "Not selected")
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>LAND</span>
+
+                            <strong>
+                                @Model.Farm.LandSize
+                                @Model.Farm.LandUnit
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>WATER</span>
+
+                            <strong>
+                                @(
+                                    string.IsNullOrWhiteSpace(
+                                        Model.Farm.WaterSource)
+                                        ? "Not specified"
+                                        : Model.Farm.WaterSource
+                                )
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+            }
+
+
+            <!-- =================================================
+                 LANGUAGE + VOICE
+            ================================================== -->
+
+            <div class="ks-ai-language-voice-box">
+
+                <div class="ks-ai-language-row">
+
+                    <div class="ks-ai-language-select">
+
+                        <label for="SelectedLanguage">
+                            🌐 Response language
+                        </label>
+
+                        <select asp-for="SelectedLanguage"
+                                id="SelectedLanguage"
+                                class="form-control"
+                                onchange="updateVoiceLanguage()">
+
+                            <option value="auto">✨ Auto-detect spoken language</option>
+                            <option value="en">English</option>
+                            <option value="gu">ગુજરાતી — Gujarati</option>
+                            <option value="hi">हिंदी — Hindi</option>
+                            <option value="mr">मराठी — Marathi</option>
+                            <option value="bn">বাংলা — Bengali</option>
+                            <option value="kn">ಕನ್ನಡ — Kannada</option>
+                            <option value="ml">മലയാളം — Malayalam</option>
+                            <option value="pa">ਪੰਜਾਬੀ — Punjabi</option>
+                            <option value="ta">தமிழ் — Tamil</option>
+                            <option value="te">తెలుగు — Telugu</option>
+
+                        </select>
+
+                        <small>
+                            Voice input is automatically transcribed by Gemini and the spoken language is detected. You can still choose a language manually.
+                        </small>
+
+                    </div>
+
+                    <div class="ks-ai-voice-actions">
+
+                        <button type="button"
+                                class="ks-ai-voice-button"
+                                id="ksVoiceInputButton"
+                                onclick="startVoiceInput()">
+
+                            🎤 Speak question
+
+                        </button>
+
+                        <span id="ksVoiceStatus"
+                              class="ks-ai-voice-status"
+                              aria-live="polite"></span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 QUESTION
+            ================================================== -->
+
+            <div class="ks-ai-question-box">
+
+                <label asp-for="Question">
+                    Your question
+                </label>
+
+                <textarea asp-for="Question"
+                          rows="5"
+                          placeholder="@(hasCrop
+                              ? $"Example: My {Model.SelectedCrop!.CropName} leaves are turning yellow. What should I check?"
+                              : "Example: How can I improve soil health before planting?")"></textarea>
+
+                <small class="ks-ai-voice-help">
+                    🎤 You can speak your question instead of typing it.
+                </small>
+
+            </div>
+
+
+            <!-- =================================================
+                 SUBMIT
+            ================================================== -->
+
+            <button type="submit"
+                    class="ks-ai-submit">
+
+                ✨ Ask KrishiSahay AI
+
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- =========================================================
+         AI ANSWER
+    ========================================================== -->
+
+    @if (Model.HasAnswer)
+    {
+        <section class="ks-ai-answer-card">
+
+            <div class="ks-ai-answer-header">
+
+                <div class="ks-ai-answer-icon">
+                    🤖
+                </div>
+
+                <div>
+
+                    <span>
+                        KRISHISAHAY AI
+                    </span>
+
+                    <h2>
+                        AI Guidance
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="ks-ai-question-preview">
+
+                <strong>
+                    Your question
+                </strong>
+
+                <p>
+                    @Model.Question
+                </p>
+
+            </div>
+
+
+            <div class="ks-ai-answer" id="ksAiAnswerContent"></div>
+
+            <div class="ks-ai-answer-voice-actions">
+
+                <button type="button"
+                        class="ks-ai-voice-button"
+                        id="ksSpeakAnswerButton"
+                        onclick="speakAiAnswer()">
+
+                    🔊 Listen to answer
+
+                </button>
+
+                <button type="button"
+                        class="ks-ai-voice-stop-button"
+                        onclick="stopSpeaking()">
+
+                    ⏹ Stop
+
+                </button>
+
+                <span id="ksSpeechStatus"
+                      class="ks-ai-voice-status"
+                      aria-live="polite"></span>
+
+            </div>
+
+
+            <div class="ks-ai-disclaimer">
+
+                <strong>Important:</strong>
+
+                AI guidance is for learning and decision
+                support. For serious crop disease,
+                pest or chemical-use decisions, verify
+                the issue with appropriate agricultural
+                experts and local recommendations.
+
+            </div>
+
+        </section>
+    }
+
+
+    <!-- =========================================================
+         SUGGESTED QUESTIONS
+    ========================================================== -->
+
+    <section class="ks-ai-suggestions">
+
+        <h2>
+            Try asking
+        </h2>
+
+
+        <div class="ks-ai-suggestion-grid">
+
+            <button type="button"
+                    onclick="setQuestion('What should I check about my soil before planting?')">
+
+                🌱 Soil guidance
+
+            </button>
+
+
+            <button type="button"
+                    onclick="setQuestion('What should I know about growing my crop?')">
+
+                🌾 Crop guidance
+
+            </button>
+
+
+            <button type="button"
+                    onclick="setQuestion('How can I manage water for my crop?')">
+
+                💧 Water management
+
+            </button>
+
+
+            <button type="button"
+                    onclick="setQuestion('What should I monitor while my crop is growing?')">
+
+                🔎 Crop monitoring
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         NAVIGATION
+    ========================================================== -->
+
+    <div class="ks-ai-actions">
+
+        @if (hasCrop)
+        {
+            <a asp-controller="Home"
+               asp-action="CropDashboard"
+               asp-route-farmId="@Model.SelectedFarmId"
+               asp-route-cropId="@Model.SelectedCropId"
+               class="ks-ai-back">
+
+                ← Crop Dashboard
+
+            </a>
+        }
+        else if (hasFarm)
+        {
+            <a asp-controller="Home"
+               asp-action="Dashboard"
+               asp-route-id="@Model.SelectedFarmId"
+               class="ks-ai-back">
+
+                ← Farm Dashboard
+
+            </a>
+        }
+        else
+        {
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="ks-ai-back">
+
+                ← Home
+
+            </a>
+        }
+
+
+        <a asp-controller="Home"
+           asp-action="MyFarms"
+           class="ks-ai-back">
+
+            🌱 My Farms
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<style>
+    .ks-ai-language-voice-box {
+        margin: 18px 0 14px;
+        padding: 16px 18px;
+        border: 1px solid rgba(46, 125, 50, 0.15);
+        border-radius: 14px;
+        background: rgba(46, 125, 50, 0.035);
+    }
+
+    .ks-ai-language-row {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
+    .ks-ai-language-select {
+        flex: 1 1 320px;
+    }
+
+    .ks-ai-language-select label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: 600;
+    }
+
+    .ks-ai-language-select small,
+    .ks-ai-voice-help {
+        display: block;
+        margin-top: 7px;
+        opacity: 0.72;
+    }
+
+    .ks-ai-voice-actions,
+    .ks-ai-answer-voice-actions {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        flex-wrap: wrap;
+    }
+
+    .ks-ai-voice-button,
+    .ks-ai-voice-stop-button {
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .ks-ai-voice-button {
+        background: var(--ks-green, #2e7d32);
+        color: #fff;
+    }
+
+    .ks-ai-voice-stop-button {
+        background: #e9eeee;
+        color: #263238;
+    }
+
+    .ks-ai-voice-button:hover,
+    .ks-ai-voice-stop-button:hover {
+        transform: translateY(-1px);
+    }
+
+    .ks-ai-voice-button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .ks-ai-voice-status {
+        min-height: 20px;
+        font-size: 0.88rem;
+        opacity: 0.75;
+    }
+
+    .ks-ai-answer-voice-actions {
+        margin-top: 15px;
+    }
+
+    @@media (max-width: 700px) {
+        .ks-ai-language-row {
+            align-items: stretch;
+        }
+
+        .ks-ai-voice-actions {
+            width: 100%;
+        }
+
+        .ks-ai-voice-button,
+        .ks-ai-voice-stop-button {
+            flex: 1;
+        }
+    }
+</style>
+
+
+<script>
+
+    /*
+     * Voice language mapping.
+     * These codes are used by the browser Speech Recognition
+     * and Speech Synthesis APIs.
+     */
+    const ksVoiceLanguages = {
+        en: "en-IN",
+        gu: "gu-IN",
+        hi: "hi-IN",
+        mr: "mr-IN",
+        bn: "bn-IN",
+        kn: "kn-IN",
+        ml: "ml-IN",
+        pa: "pa-IN",
+        ta: "ta-IN",
+        te: "te-IN"
+    };
+
+
+    function getSelectedVoiceLanguage() {
+
+        const languageSelect =
+            document.getElementById("SelectedLanguage");
+
+        if (!languageSelect) {
+            return "en-IN";
+        }
+
+        return ksVoiceLanguages[languageSelect.value] || "en-IN";
+    }
+
+
+    function updateVoiceLanguage() {
+
+        const status =
+            document.getElementById("ksVoiceStatus");
+
+        if (status) {
+            const selected =
+                document.getElementById("SelectedLanguage")?.value;
+
+            status.textContent =
+                selected === "auto"
+                    ? "Voice language: Automatic detection"
+                    : "Voice language: " + getSelectedVoiceLanguage();
+        }
+    }
+
+
+    /*
+     * Gemini-powered voice input.
+     *
+     * The browser only records the microphone audio. Gemini 3.5 Transcribe
+     * performs the speech-to-text conversion with automatic language
+     * detection, so the user does not have to choose Hindi/Gujarati/etc.
+     * before speaking.
+     */
+    let ksMediaRecorder = null;
+    let ksAudioChunks = [];
+    let ksMediaStream = null;
+
+    function getAntiForgeryToken() {
+
+        const form = document.querySelector("form");
+
+        if (!form) {
+            return "";
+        }
+
+        const token =
+            form.querySelector('input[name="__RequestVerificationToken"]');
+
+        return token ? token.value : "";
+    }
+
+    async function startVoiceInput() {
+
+        const textarea =
+            document.getElementById("Question");
+
+        const button =
+            document.getElementById("ksVoiceInputButton");
+
+        const status =
+            document.getElementById("ksVoiceStatus");
+
+        const languageSelect =
+            document.getElementById("SelectedLanguage");
+
+        if (!textarea || !button || !status) {
+            return;
+        }
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            status.textContent =
+                "Voice input is not supported by this browser. Try Chrome or Edge.";
+            return;
+        }
+
+        if (ksMediaRecorder && ksMediaRecorder.state === "recording") {
+            ksMediaRecorder.stop();
+            return;
+        }
+
+        try {
+            ksMediaStream =
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            const preferredMimeTypes = [
+                "audio/webm;codecs=opus",
+                "audio/webm",
+                "audio/ogg;codecs=opus"
+            ];
+
+            const supportedMimeType =
+                preferredMimeTypes.find(
+                    type => MediaRecorder.isTypeSupported(type)
+                );
+
+            ksMediaRecorder = supportedMimeType
+                ? new MediaRecorder(
+                    ksMediaStream,
+                    { mimeType: supportedMimeType }
+                )
+                : new MediaRecorder(ksMediaStream);
+
+            ksAudioChunks = [];
+
+            ksMediaRecorder.ondataavailable =
+                function (event) {
+                    if (event.data && event.data.size > 0) {
+                        ksAudioChunks.push(event.data);
+                    }
+                };
+
+            ksMediaRecorder.onstart =
+                function () {
+                    button.disabled = false;
+                    button.textContent = "🔴 Stop recording";
+                    status.textContent =
+                        "Listening... Speak naturally. Language will be detected automatically.";
+                };
+
+            ksMediaRecorder.onerror =
+                function () {
+                    status.textContent =
+                        "Voice recording could not be completed. Please try again.";
+                    stopVoiceStream();
+                    resetVoiceButton();
+                };
+
+            ksMediaRecorder.onstop =
+                async function () {
+                    stopVoiceStream();
+                    button.disabled = true;
+                    button.textContent = "⏳ Transcribing...";
+                    status.textContent =
+                        "Gemini is transcribing your speech and detecting the language...";
+
+                    try {
+                        const blobType =
+                            ksMediaRecorder && ksMediaRecorder.mimeType
+                                ? ksMediaRecorder.mimeType
+                                : "audio/webm";
+
+                        const audioBlob =
+                            new Blob(ksAudioChunks, { type: blobType });
+
+                        if (audioBlob.size === 0) {
+                            throw new Error("empty-audio");
+                        }
+
+                        const formData = new FormData();
+                        formData.append(
+                            "audio",
+                            audioBlob,
+                            "krishisahay-voice.webm"
+                        );
+
+                        formData.append(
+                            "__RequestVerificationToken",
+                            getAntiForgeryToken()
+                        );
+
+                        const response =
+                            await fetch(
+                                '@Url.Action("TranscribeSpeech", "Home")',
+                                {
+                                    method: "POST",
+                                    body: formData,
+                                    credentials: "same-origin"
+                                }
+                            );
+
+                        const result =
+                            await response.json();
+
+                        if (!response.ok || !result.success) {
+                            throw new Error(
+                                result.message || "transcription-failed"
+                            );
+                        }
+
+                        textarea.value = result.transcript || "";
+
+                        if (languageSelect && result.languageCode) {
+                            const supportedCodes = [
+                                "auto", "en", "gu", "hi", "mr",
+                                "bn", "kn", "ml", "pa", "ta", "te"
+                            ];
+
+                            languageSelect.value =
+                                supportedCodes.includes(result.languageCode)
+                                    ? result.languageCode
+                                    : "auto";
+                        }
+
+                        textarea.dispatchEvent(
+                            new Event("input", { bubbles: true })
+                        );
+
+                        textarea.focus();
+
+                        status.textContent =
+                            "✅ Detected " +
+                            (result.languageName || "the spoken language") +
+                            ". Your question is ready.";
+                    }
+                    catch (error) {
+                        console.error(error);
+
+                        status.textContent =
+                            "Voice transcription could not be completed. Please try again.";
+                    }
+                    finally {
+                        resetVoiceButton();
+                        ksMediaRecorder = null;
+                        ksAudioChunks = [];
+                    }
+                };
+
+            ksMediaRecorder.start();
+        }
+        catch (error) {
+            console.error(error);
+
+            stopVoiceStream();
+            resetVoiceButton();
+
+            if (error && error.name === "NotAllowedError") {
+                status.textContent =
+                    "🎤 Microphone permission was denied. Please allow microphone access and try again.";
+            }
+            else {
+                status.textContent =
+                    "Could not start the microphone. Please try again.";
+            }
+        }
+    }
+
+    function stopVoiceStream() {
+
+        if (ksMediaStream) {
+            ksMediaStream.getTracks().forEach(
+                track => track.stop()
+            );
+        }
+
+        ksMediaStream = null;
+    }
+
+    function resetVoiceButton() {
+
+        const button =
+            document.getElementById("ksVoiceInputButton");
+
+        if (button) {
+            button.disabled = false;
+            button.textContent = "🎤 Speak question";
+        }
+    }
+
+    function detectVoiceLanguageFromText(text) {
+
+        if (!text) {
+            return "en-IN";
+        }
+
+        for (const ch of text) {
+            const code = ch.codePointAt(0);
+
+            if (code >= 0x0A80 && code <= 0x0AFF) return "gu-IN";
+            if (code >= 0x0980 && code <= 0x09FF) return "bn-IN";
+            if (code >= 0x0A00 && code <= 0x0A7F) return "pa-IN";
+            if (code >= 0x0B80 && code <= 0x0BFF) return "ta-IN";
+            if (code >= 0x0C00 && code <= 0x0C7F) return "te-IN";
+            if (code >= 0x0C80 && code <= 0x0CFF) return "kn-IN";
+            if (code >= 0x0D00 && code <= 0x0D7F) return "ml-IN";
+            if (code >= 0x0900 && code <= 0x097F) return "hi-IN";
+        }
+
+        return "en-IN";
+    }
+
+
+    /*
+     * Read the generated AI answer aloud.
+     */
+    function speakAiAnswer() {
+
+        const status =
+            document.getElementById("ksSpeechStatus");
+
+        const answerElement =
+            document.getElementById("ksAiAnswerContent");
+
+        if (!answerElement) {
+            return;
+        }
+
+        const text =
+            answerElement.innerText.trim();
+
+        if (!text) {
+
+            if (status) {
+                status.textContent =
+                    "There is no answer to read yet.";
+            }
+
+            return;
+        }
+
+        if (!("speechSynthesis" in window)) {
+
+            if (status) {
+                status.textContent =
+                    "Text-to-speech is not supported by this browser.";
+            }
+
+            return;
+        }
+
+
+        window.speechSynthesis.cancel();
+
+
+        const utterance =
+            new SpeechSynthesisUtterance(text);
+
+        let answerVoiceLanguage =
+            getSelectedVoiceLanguage();
+
+        if (document.getElementById("SelectedLanguage")?.value === "auto") {
+            answerVoiceLanguage = detectVoiceLanguageFromText(text);
+        }
+
+        utterance.lang =
+            answerVoiceLanguage;
+
+        utterance.rate =
+            0.95;
+
+        utterance.pitch =
+            1;
+
+
+        const voices =
+            window.speechSynthesis.getVoices();
+
+        const languageCode =
+            utterance.lang.toLowerCase();
+
+        const matchingVoice =
+            voices.find(
+                voice =>
+                    voice.lang &&
+                    voice.lang.toLowerCase() === languageCode
+            )
+            ||
+            voices.find(
+                voice =>
+                    voice.lang &&
+                    voice.lang
+                        .toLowerCase()
+                        .startsWith(
+                            languageCode.substring(0, 2)
+                        )
+            );
+
+        if (matchingVoice) {
+            utterance.voice =
+                matchingVoice;
+        }
+
+
+        utterance.onstart =
+            function () {
+
+                if (status) {
+                    status.textContent =
+                        "Reading the answer aloud...";
+                }
+            };
+
+
+        utterance.onend =
+            function () {
+
+                if (status) {
+                    status.textContent =
+                        "Finished reading the answer.";
+                }
+            };
+
+
+        utterance.onerror =
+            function () {
+
+                if (status) {
+                    status.textContent =
+                        "Text-to-speech could not be completed.";
+                }
+            };
+
+
+        window.speechSynthesis.speak(
+            utterance
+        );
+    }
+
+
+    function stopSpeaking() {
+
+        if ("speechSynthesis" in window) {
+            window.speechSynthesis.cancel();
+        }
+
+        const status =
+            document.getElementById("ksSpeechStatus");
+
+        if (status) {
+            status.textContent =
+                "Speech stopped.";
+        }
+    }
+
+
+    /*
+     * Safely render Gemini's Markdown-like response.
+     * This keeps AI output as text and only converts the
+     * formatting patterns we expect: headings, bold text,
+     * bullet lists and numbered lists.
+     */
+    function renderAiAnswer() {
+
+        const answerElement =
+            document.getElementById("ksAiAnswerContent");
+
+        if (!answerElement) {
+            return;
+        }
+
+        const rawAnswer =
+            @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Answer ?? ""));
+
+        answerElement.innerHTML = "";
+
+        if (!rawAnswer) {
+            return;
+        }
+
+        // Add inline text while converting only **bold** Markdown.
+        function appendFormattedText(parent, text) {
+
+            const parts = text.split("**");
+
+            for (let i = 0; i < parts.length; i++) {
+
+                if (!parts[i]) {
+                    continue;
+                }
+
+                if (i % 2 === 1) {
+
+                    const strong = document.createElement("strong");
+                    strong.textContent = parts[i];
+                    parent.appendChild(strong);
+
+                } else {
+
+                    parent.appendChild(
+                        document.createTextNode(parts[i])
+                    );
+                }
+            }
+        }
+
+        function addParagraph(text) {
+
+            const p = document.createElement("p");
+            appendFormattedText(p, text);
+            answerElement.appendChild(p);
+        }
+
+        function addHeading(text) {
+
+            const h3 = document.createElement("h3");
+            appendFormattedText(h3, text);
+            answerElement.appendChild(h3);
+        }
+
+        const lines = rawAnswer
+            .replace(/\r\n/g, "\n")
+            .replace(/\r/g, "\n")
+            .split("\n");
+
+        let bulletList = null;
+        let numberedList = null;
+
+        function closeLists() {
+            bulletList = null;
+            numberedList = null;
+        }
+
+        for (let i = 0; i < lines.length; i++) {
+
+            const line = lines[i].trim();
+
+            if (!line) {
+                closeLists();
+                continue;
+            }
+
+            // Markdown headings: # Heading, ## Heading, ### Heading
+            const markdownHeading =
+                line.match(/^#{1,3}\s+(.+)$/);
+
+            if (markdownHeading) {
+                closeLists();
+                addHeading(markdownHeading[1]);
+                continue;
+            }
+
+            // Common section headings returned by the AI.
+            const sectionHeading =
+                line.match(
+                    /^(SHORT ANSWER|WHAT THIS MEANS|WHAT TO CHECK|NEXT STEPS|IMPORTANT|RECOMMENDATION|SUMMARY|PRACTICAL STEPS)$/i
+                );
+
+            if (sectionHeading) {
+                closeLists();
+                addHeading(sectionHeading[1]);
+                continue;
+            }
+
+            // Bullet list: *, -, or •
+            const bulletMatch =
+                line.match(/^(?:\*|-|•)\s+(.+)$/);
+
+            if (bulletMatch) {
+
+                if (!bulletList) {
+                    closeLists();
+                    bulletList = document.createElement("ul");
+                    answerElement.appendChild(bulletList);
+                }
+
+                const li = document.createElement("li");
+                appendFormattedText(li, bulletMatch[1]);
+                bulletList.appendChild(li);
+                continue;
+            }
+
+            // Numbered list: 1. Item or 1) Item
+            const numberedMatch =
+                line.match(/^\d+[.)]\s+(.+)$/);
+
+            if (numberedMatch) {
+
+                if (!numberedList) {
+                    closeLists();
+                    numberedList = document.createElement("ol");
+                    answerElement.appendChild(numberedList);
+                }
+
+                const li = document.createElement("li");
+                appendFormattedText(li, numberedMatch[1]);
+                numberedList.appendChild(li);
+                continue;
+            }
+
+            closeLists();
+            addParagraph(line);
+        }
+    }
+
+
+    function setQuestion(question) {
+
+        const textarea =
+            document.getElementById("Question");
+
+        if (textarea) {
+
+            textarea.value = question;
+
+            textarea.focus();
+
+        }
+
+    }
+
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+            renderAiAnswer();
+            updateVoiceLanguage();
+
+            // Some browsers load speech voices asynchronously.
+            if ("speechSynthesis" in window) {
+                window.speechSynthesis.onvoiceschanged =
+                    function () {
+                        // Refresh the available voice list silently.
+                        window.speechSynthesis.getVoices();
+                    };
+            }
+        }
+    );
+
+
+    function farmChanged(farmId) {
+
+        if (!farmId) {
+
+            window.location.href =
+                '@Url.Action("AskAI", "Home")';
+
+            return;
+
+        }
+
+        window.location.href =
+            '@Url.Action("AskAI", "Home")' +
+            '?farmId=' +
+            encodeURIComponent(farmId);
+
+    }
+    function cropChanged(cropId) {
+
+    if (!cropId) {
+        return;
+    }
+
+    const farmId =
+        document.getElementById("SelectedFarmId").value;
+
+    if (!farmId) {
+        return;
+    }
+
+    window.location.href =
+        '@Url.Action("AskAI", "Home")' +
+        '?farmId=' +
+        encodeURIComponent(farmId) +
+        '&cropId=' +
+        encodeURIComponent(cropId);
+}
+</script>

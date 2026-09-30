@@ -1,0 +1,749 @@
+﻿@model KrishiSahayAI.Models.FarmOnboardingViewModel
+
+@{
+    ViewData["Title"] = "Create Your Farm";
+}
+
+<link rel="stylesheet" href="~/css/krishisahay.css" />
+
+<div class="ks-onboarding">
+
+    <div class="ks-onboarding-header">
+
+        <div class="ks-badge">
+            🌱 Your Farm Journey
+        </div>
+
+        <h1>
+            Let's understand your farm
+        </h1>
+
+        <p>
+            Tell us a little about yourself and your farming plans.
+            We'll use this information to personalize KrishiSahay for you.
+        </p>
+
+    </div>
+
+
+    <form asp-action="Onboarding"
+          method="post"
+          class="ks-onboarding-form">
+
+        @Html.AntiForgeryToken()
+
+
+        <!-- ============================================================
+             FARMER
+             ============================================================ -->
+
+        <section class="ks-form-section">
+
+            <div class="ks-form-number">
+                01
+            </div>
+
+            <div class="ks-form-content">
+
+                <h2>
+                    Tell us about yourself
+                </h2>
+
+                <p>
+                    You don't need to be an experienced farmer.
+                    KrishiSahay is designed for beginners too.
+                </p>
+
+
+                <label asp-for="FarmerName">
+                    Your name
+                </label>
+
+                <input asp-for="FarmerName"
+                       placeholder="e.g. Rahul Patel"
+                       class="ks-input" />
+
+                <span asp-validation-for="FarmerName"
+                      class="ks-validation">
+                </span>
+
+
+                <label asp-for="ExperienceLevel">
+                    Farming experience
+                </label>
+
+                <select asp-for="ExperienceLevel"
+                        class="ks-input">
+
+                    <option value="">
+                        Select experience
+                    </option>
+
+                    <option value="Beginner">
+                        🌱 Beginner
+                    </option>
+
+                    <option value="Some Experience">
+                        🌿 I have some experience
+                    </option>
+
+                    <option value="Experienced">
+                        🌾 Experienced farmer
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="ExperienceLevel"
+                      class="ks-validation">
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- ============================================================
+             LOCATION
+             ============================================================ -->
+
+        <section class="ks-form-section">
+
+            <div class="ks-form-number">
+                02
+            </div>
+
+            <div class="ks-form-content">
+
+                <h2>
+                    Where is your farm?
+                </h2>
+
+                <p>
+                    Location helps us provide relevant weather
+                    and local farming information.
+                </p>
+
+
+                <label asp-for="Location">
+                    City / Village / District
+                </label>
+
+                <input asp-for="Location"
+                       placeholder="e.g. Porbandar, Gujarat"
+                       class="ks-input" />
+
+                <span asp-validation-for="Location"
+                      class="ks-validation">
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- ============================================================
+             LAND
+             ============================================================ -->
+
+        <section class="ks-form-section">
+
+            <div class="ks-form-number">
+                03
+            </div>
+
+            <div class="ks-form-content">
+
+                <h2>
+                    How much space do you have?
+                </h2>
+
+                <p>
+                    This can be agricultural land, a backyard,
+                    terrace, balcony or indoor growing space.
+                </p>
+
+
+                <div class="ks-input-row">
+
+                    <div>
+
+                        <label asp-for="LandSize">
+                            Size
+                        </label>
+
+                        <input asp-for="LandSize"
+                               type="number"
+                               step="0.01"
+                               min="0"
+                               placeholder="e.g. 2"
+                               class="ks-input" />
+
+                        <span asp-validation-for="LandSize"
+                              class="ks-validation">
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <label asp-for="LandUnit">
+                            Unit
+                        </label>
+
+                        <select asp-for="LandUnit"
+                                class="ks-input">
+
+                            <option value="Acre">
+                                Acre
+                            </option>
+
+                            <option value="Hectare">
+                                Hectare
+                            </option>
+
+                            <option value="Bigha">
+                                Bigha
+                            </option>
+
+                            <option value="Square Meter">
+                                Square Meter
+                            </option>
+
+                            <option value="Square Feet">
+                                Square Feet
+                            </option>
+
+                            <option value="Balcony">
+                                Balcony
+                            </option>
+
+                            <option value="Terrace">
+                                Terrace
+                            </option>
+
+                            <option value="Indoor Space">
+                                Indoor Space
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ============================================================
+             SOIL ASSESSMENT
+             ============================================================ -->
+
+        <section class="ks-form-section">
+
+            <div class="ks-form-number">
+                04
+            </div>
+
+            <div class="ks-form-content">
+
+                <h2>
+                    🌱 Let's understand your soil
+                </h2>
+
+                <p>
+                    This quick assessment helps KrishiSahay understand
+                    your soil conditions and provide more relevant crop
+                    and farming recommendations.
+                </p>
+
+
+                <!-- SOIL KNOWLEDGE -->
+
+                <label asp-for="SoilKnowledge">
+                    Do you know your soil?
+                </label>
+
+                <select asp-for="SoilKnowledge"
+                        class="ks-input">
+
+                    <option value="">
+                        Select an option
+                    </option>
+
+                    <option value="Yes">
+                        ✅ Yes, I know my soil
+                    </option>
+
+                    <option value="No">
+                        🤔 No, I'm not sure
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="SoilKnowledge"
+                      class="ks-validation">
+                </span>
+
+
+                <!-- SOIL TYPE -->
+
+                <label asp-for="SoilType">
+                    What type of soil do you have?
+                </label>
+
+                <select asp-for="SoilType"
+                        class="ks-input">
+
+                    <option value="">
+                        Select soil type
+                    </option>
+
+                    <option value="I don't know">
+                        🤔 I don't know
+                    </option>
+
+                    <option value="Sandy">
+                        🟡 Sandy soil
+                    </option>
+
+                    <option value="Clay">
+                        🟤 Clay soil
+                    </option>
+
+                    <option value="Loamy">
+                        🟢 Loamy soil
+                    </option>
+
+                    <option value="Black">
+                        ⚫ Black soil
+                    </option>
+
+                    <option value="Red">
+                        🔴 Red soil
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="SoilType"
+                      class="ks-validation">
+                </span>
+
+
+                <!-- SOIL TEXTURE -->
+
+                <label asp-for="SoilTexture">
+                    What does the soil feel like?
+                </label>
+
+                <select asp-for="SoilTexture"
+                        class="ks-input">
+
+                    <option value="">
+                        Select soil texture
+                    </option>
+
+                    <option value="Sandy">
+                        🟡 Sandy
+                    </option>
+
+                    <option value="Loamy">
+                        🟢 Loamy
+                    </option>
+
+                    <option value="Clay">
+                        🟤 Clay
+                    </option>
+
+                    <option value="Silty">
+                        Soft / Silty
+                    </option>
+
+                    <option value="Mixed">
+                        Mixed / Combination
+                    </option>
+
+                    <option value="I don't know">
+                        🤔 I don't know
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="SoilTexture"
+                      class="ks-validation">
+                </span>
+
+
+                <!-- SOIL COLOUR -->
+
+                <label asp-for="SoilColour">
+                    What colour is your soil?
+                </label>
+
+                <select asp-for="SoilColour"
+                        class="ks-input">
+
+                    <option value="">
+                        Select soil colour
+                    </option>
+
+                    <option value="Black">
+                        ⚫ Black
+                    </option>
+
+                    <option value="Dark Brown">
+                        🟤 Dark brown
+                    </option>
+
+                    <option value="Brown">
+                        🤎 Brown
+                    </option>
+
+                    <option value="Red">
+                        🔴 Red / Reddish
+                    </option>
+
+                    <option value="Yellow">
+                        🟡 Yellow / Yellowish
+                    </option>
+
+                    <option value="Grey">
+                        Grey
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                    <option value="I don't know">
+                        🤔 I don't know
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="SoilColour"
+                      class="ks-validation">
+                </span>
+
+
+                <!-- DRAINAGE -->
+
+                <label asp-for="Drainage">
+                    How quickly does water drain from your soil?
+                </label>
+
+                <select asp-for="Drainage"
+                        class="ks-input">
+
+                    <option value="">
+                        Select drainage condition
+                    </option>
+
+                    <option value="Quickly">
+                        💧 Drains quickly
+                    </option>
+
+                    <option value="Moderately">
+                        💧 Drains moderately
+                    </option>
+
+                    <option value="Slowly">
+                        💦 Drains slowly
+                    </option>
+
+                    <option value="Waterlogged">
+                        🌊 Water tends to stay / waterlogged
+                    </option>
+
+                    <option value="I don't know">
+                        🤔 I don't know
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="Drainage"
+                      class="ks-validation">
+                </span>
+
+
+                <!-- PREVIOUS CROP -->
+
+                <label asp-for="PreviousCrop">
+                    What was grown here previously?
+                </label>
+
+                <input asp-for="PreviousCrop"
+                       placeholder="e.g. Groundnut, Cotton, Wheat"
+                       class="ks-input" />
+
+                <span asp-validation-for="PreviousCrop"
+                      class="ks-validation">
+                </span>
+
+
+                <!-- SOIL TEST -->
+
+                <label asp-for="SoilTestStatus">
+                    Have you had your soil tested?
+                </label>
+
+                <select asp-for="SoilTestStatus"
+                        class="ks-input">
+
+                    <option value="">
+                        Select soil test status
+                    </option>
+
+                    <option value="Yes">
+                        ✅ Yes, I have a soil test
+                    </option>
+
+                    <option value="No">
+                        ❌ No soil test yet
+                    </option>
+
+                    <option value="Not Sure">
+                        🤔 I'm not sure
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="SoilTestStatus"
+                      class="ks-validation">
+                </span>
+
+
+                <div style="margin-top:18px;
+                            padding:15px 18px;
+                            border:1px solid var(--ks-border);
+                            border-radius:12px;
+                            background:#f7fbf7;">
+
+                    <strong>
+                        💡 Important
+                    </strong>
+
+                    <p style="margin:6px 0 0;">
+                        This is an observational soil assessment.
+                        It does not replace laboratory soil testing.
+                        If you have a soil test report, you can use it
+                        later to improve your recommendations.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ============================================================
+             WATER
+             ============================================================ -->
+
+        <section class="ks-form-section">
+
+            <div class="ks-form-number">
+                05
+            </div>
+
+            <div class="ks-form-content">
+
+                <h2>
+                    What is your water source?
+                </h2>
+
+                <select asp-for="WaterSource"
+                        class="ks-input">
+
+                    <option value="">
+                        Select water source
+                    </option>
+
+                    <option value="Rainwater">
+                        🌧️ Rainwater
+                    </option>
+
+                    <option value="Borewell">
+                        💧 Borewell
+                    </option>
+
+                    <option value="Well">
+                        💧 Well
+                    </option>
+
+                    <option value="Canal">
+                        🌊 Canal
+                    </option>
+
+                    <option value="Municipal">
+                        🚰 Municipal water
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="WaterSource"
+                      class="ks-validation">
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- ============================================================
+             FARMING METHOD
+             ============================================================ -->
+
+        <section class="ks-form-section">
+
+            <div class="ks-form-number">
+                06
+            </div>
+
+            <div class="ks-form-content">
+
+                <h2>
+                    What type of farming interests you?
+                </h2>
+
+                <p>
+                    You can change this later.
+                </p>
+
+                <select asp-for="FarmingMethod"
+                        class="ks-input">
+
+                    <option value="">
+                        Select farming method
+                    </option>
+
+                    <option value="Traditional">
+                        🌾 Traditional farming
+                    </option>
+
+                    <option value="Modern">
+                        🚜 Modern farming
+                    </option>
+
+                    <option value="Hydroponics">
+                        💧 Hydroponics
+                    </option>
+
+                    <option value="Vertical Farming">
+                        🌱 Vertical farming
+                    </option>
+
+                    <option value="Indoor Farming">
+                        🏠 Indoor farming
+                    </option>
+
+                    <option value="Greenhouse">
+                        🌿 Greenhouse / Polyhouse
+                    </option>
+
+                    <option value="Hybrid">
+                        🔄 Hybrid farming
+                    </option>
+
+                    <option value="Not Sure">
+                        🤔 I'm not sure yet
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="FarmingMethod"
+                      class="ks-validation">
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- ============================================================
+             BUDGET
+             ============================================================ -->
+
+        <section class="ks-form-section">
+
+            <div class="ks-form-number">
+                07
+            </div>
+
+            <div class="ks-form-content">
+
+                <h2>
+                    What is your approximate budget?
+                </h2>
+
+                <p>
+                    This helps us keep recommendations practical.
+                </p>
+
+                <div class="ks-budget-input">
+
+                    <span>₹</span>
+
+                    <input asp-for="Budget"
+                           type="number"
+                           min="0"
+                           step="100"
+                           placeholder="e.g. 50000"
+                           class="ks-input" />
+
+                </div>
+
+                <span asp-validation-for="Budget"
+                      class="ks-validation">
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- ============================================================
+             SUBMIT
+             ============================================================ -->
+
+        <div class="ks-submit-area">
+
+            <h2>
+                Ready to start? 🌱
+            </h2>
+
+            <p>
+                We'll create your personalized KrishiSahay farm journey.
+            </p>
+
+            <button type="submit"
+                    class="ks-btn ks-btn-primary ks-submit-button">
+
+                Create My Farm Journey →
+
+            </button>
+
+        </div>
+
+
+    </form>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

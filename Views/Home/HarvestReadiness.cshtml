@@ -1,0 +1,260 @@
+﻿@model KrishiSahayAI.Models.FarmProfile
+
+@{
+    ViewData["Title"] = "Harvest Readiness";
+    var crops = ViewBag.Crops as IEnumerable<KrishiSahayAI.Models.FarmCrop>;
+}
+
+<div class="ks-page">
+
+    <div style="max-width:1000px;margin:0 auto;padding:40px 20px;">
+
+        <!-- HEADER -->
+
+        <section class="ks-card" style="text-align:center;">
+
+            <div style="font-size:52px;">
+                🌾
+            </div>
+
+            <div class="ks-eyebrow">
+                FARM JOURNEY · FINAL STEP
+            </div>
+
+            <h1 style="margin:10px 0;">
+                Learn about harvest readiness
+            </h1>
+
+            <p style="
+                max-width:700px;
+                margin:0 auto;
+                line-height:1.7;
+                color:var(--ks-text);
+            ">
+                Learn how to recognize when your crop may be approaching
+                harvest and what to observe before making a harvest decision.
+            </p>
+
+        </section>
+
+
+        <!-- YOUR CROPS -->
+
+        <section class="ks-card" style="margin-top:24px;">
+
+            <div class="ks-eyebrow">
+                YOUR CROPS
+            </div>
+
+            <h2>
+                Crops on this farm
+            </h2>
+
+            @if (crops != null && crops.Any())
+            {
+                <div style="
+                    display:grid;
+                    grid-template-columns:
+                        repeat(auto-fit,minmax(220px,1fr));
+                    gap:16px;
+                    margin-top:20px;
+                ">
+
+                    @foreach (var crop in crops)
+                    {
+                        <div style="
+                            padding:18px;
+                            border:1px solid #e5ebe5;
+                            border-radius:14px;
+                            background:#f8fbf8;
+                        ">
+
+                            <div style="
+                                font-size:13px;
+                                font-weight:700;
+                                color:#2e7d32;
+                                text-transform:uppercase;
+                            ">
+                                CROP
+                            </div>
+
+                            <h3 style="margin:8px 0 4px;">
+                                @crop.CropName
+                            </h3>
+
+                            @if (crop.SowingDate.HasValue)
+                            {
+                                <p style="margin:0;">
+                                    Sown:
+                                    @crop.SowingDate.Value.ToString("dd MMM yyyy")
+                                </p>
+                            }
+                            else
+                            {
+                                <p style="margin:0;">
+                                    Sowing date not specified
+                                </p>
+                            }
+
+                        </div>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <p>
+                    No crops are currently registered on this farm.
+                </p>
+            }
+
+        </section>
+
+
+        <!-- WHAT TO OBSERVE -->
+
+        <section class="ks-card" style="margin-top:24px;">
+
+            <div class="ks-eyebrow">
+                WHAT TO OBSERVE
+            </div>
+
+            <h2>
+                Before deciding that a crop is ready
+            </h2>
+
+            <div style="
+                display:grid;
+                gap:16px;
+                margin-top:20px;
+            ">
+
+                <div style="
+                    padding:18px;
+                    border-radius:14px;
+                    background:#f7faf7;
+                ">
+                    <strong>🌱 Crop development</strong>
+
+                    <p style="margin:8px 0 0;line-height:1.6;">
+                        Observe whether the crop has reached the expected
+                        growth stage for harvesting.
+                    </p>
+                </div>
+
+
+                <div style="
+                    padding:18px;
+                    border-radius:14px;
+                    background:#f7faf7;
+                ">
+                    <strong>🌾 Crop-specific signs</strong>
+
+                    <p style="margin:8px 0 0;line-height:1.6;">
+                        Look for visible signs such as changes in colour,
+                        size, maturity or other crop-specific indicators.
+                    </p>
+                </div>
+
+
+                <div style="
+                    padding:18px;
+                    border-radius:14px;
+                    background:#f7faf7;
+                ">
+                    <strong>📅 Growing duration</strong>
+
+                    <p style="margin:8px 0 0;line-height:1.6;">
+                        Consider the crop's growing period together with
+                        what you are observing in the field.
+                    </p>
+                </div>
+
+
+                <div style="
+                    padding:18px;
+                    border-radius:14px;
+                    background:#f7faf7;
+                ">
+                    <strong>👀 Observe before deciding</strong>
+
+                    <p style="margin:8px 0 0;line-height:1.6;">
+                        Do not rely on a single sign. Compare your
+                        observations and consider the crop's condition.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- COMPLETE -->
+
+        <section class="ks-card"
+                 style="
+                    margin-top:24px;
+                    text-align:center;
+                    background:#f4faf4;
+                 ">
+
+            <div style="font-size:42px;">
+                ✅
+            </div>
+
+            <h2>
+                Have you checked your crop for harvest readiness?
+            </h2>
+
+            <p style="
+                max-width:650px;
+                margin:0 auto 20px;
+                line-height:1.6;
+            ">
+                Once you have reviewed the signs above and observed your
+                crop, you can mark this Farm Journey step as complete.
+            </p>
+
+            <form asp-controller="Home"
+                  asp-action="CompleteHarvestReadiness"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="farmId"
+                       value="@Model.Id" />
+
+                <button type="submit"
+                        class="ks-btn ks-btn-primary">
+
+                    I've checked my crop ✓
+
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- BACK -->
+
+        <div style="
+            text-align:center;
+            margin-top:24px;
+        ">
+
+            <a href="/Home/Dashboard/@Model.Id"
+               style="
+                    color:#2e7d32;
+                    font-weight:600;
+                    text-decoration:none;
+               ">
+                ← Back to Farm Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

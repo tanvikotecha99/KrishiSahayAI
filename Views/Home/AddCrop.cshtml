@@ -1,0 +1,985 @@
+﻿@model KrishiSahayAI.Models.FarmCrop
+
+@{
+    ViewData["Title"] = "Add Crop";
+
+    var farm = ViewBag.Farm as KrishiSahayAI.Models.FarmProfile;
+
+    var allocatedArea =
+        (double)(ViewBag.AllocatedArea ?? 0d);
+
+    var remainingArea =
+        (double)(ViewBag.RemainingArea ?? farm?.LandSize ?? 0d);
+
+    var areaUnit =
+        (string)(ViewBag.AreaUnit ?? farm?.LandUnit ?? "Acre");
+
+    var areaCanBeConverted =
+        (bool)(ViewBag.AreaCanBeConverted ?? false);
+}
+
+
+<style>
+    .ks-page {
+        min-height: 100vh;
+        padding: 48px 24px 70px;
+        background: #f5faf6;
+    }
+
+    .ks-container {
+        width: min(1180px, 100%);
+        margin: 0 auto;
+    }
+
+    .ks-page-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 28px;
+        margin-bottom: 28px;
+    }
+
+    .ks-eyebrow {
+        color: #2e7d32;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .ks-page-header h1 {
+        margin: 6px 0 8px;
+        color: #123c2a;
+        font-size: clamp(34px, 4vw, 48px);
+        line-height: 1.08;
+        font-weight: 800;
+    }
+
+    .ks-page-header p {
+        margin: 0;
+        color: #53645a;
+        font-size: 17px;
+    }
+
+    .ks-card {
+        background: #fff;
+        border: 1px solid #e3ebe5;
+        border-radius: 20px;
+        box-shadow: 0 8px 28px rgba(35, 75, 48, .07);
+        padding: 30px;
+    }
+
+    .ks-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 11px 20px;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        font-size: 16px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: .18s ease;
+    }
+
+    .ks-btn-primary {
+        color: #fff !important;
+        background: #2e7d32;
+        border-color: #2e7d32;
+    }
+
+    .ks-btn-primary:hover:not(:disabled) {
+        background: #256b29;
+        border-color: #256b29;
+        color: #fff !important;
+    }
+
+    .ks-btn-outline {
+        color: #2e7d32 !important;
+        background: #fff;
+        border-color: #2e7d32;
+    }
+
+    .ks-btn-outline:hover {
+        background: #f0f8f1;
+        color: #256b29 !important;
+    }
+
+    .ks-btn:disabled {
+        opacity: .55;
+        cursor: not-allowed;
+    }
+
+    .ks-card .row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+        margin: 0;
+    }
+
+    .ks-card .col-md-6 {
+        width: auto;
+        padding: 0;
+    }
+
+    .ks-card .col-12 {
+        grid-column: 1 / -1;
+        width: auto;
+        padding: 0;
+    }
+
+    .ks-card .form-label {
+        display: block;
+        margin: 0 0 9px;
+        color: #183f2e;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .ks-card .form-control,
+    .ks-card .form-select {
+        display: block;
+        width: 100%;
+        min-height: 48px;
+        padding: 11px 14px;
+        border: 1px solid #d9e2dc;
+        border-radius: 9px;
+        background: #fff;
+        color: #20352a;
+        font-size: 16px;
+        line-height: 1.4;
+        box-sizing: border-box;
+        outline: none;
+        transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .ks-card textarea.form-control {
+        min-height: 112px;
+        resize: vertical;
+    }
+
+    .ks-card .form-control:focus,
+    .ks-card .form-select:focus {
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 3px rgba(46, 125, 50, .12);
+    }
+
+    .ks-card .form-control::placeholder {
+        color: #8a958e;
+    }
+
+    .ks-card .text-muted {
+        display: block;
+        margin-top: 7px;
+        color: #758079 !important;
+        font-size: 13px;
+    }
+
+    .ks-card .text-danger {
+        display: block;
+        margin-top: 6px;
+        color: #b42318 !important;
+        font-size: 13px;
+    }
+
+    .ks-card .alert-danger {
+        padding: 14px 16px;
+        border: 1px solid #f0b9bd;
+        border-radius: 9px;
+        background: #fce0e2;
+        color: #7d1d25;
+        font-size: 16px;
+        line-height: 1.45;
+    }
+
+    .ks-card .text-warning {
+        padding: 13px 15px;
+        border-radius: 9px;
+        background: #fff7df;
+        color: #755b12;
+        line-height: 1.45;
+    }
+
+    /* Farm-area summary */
+    .ks-card:first-of-type > div {
+        min-height: 80px;
+    }
+
+    .ks-card:first-of-type h2 {
+        color: #193f2e;
+        font-size: 27px;
+        line-height: 1.15;
+    }
+
+    /* Keep the form card visually separated from the summary. */
+    .ks-card + .ks-card {
+        margin-top: 0;
+    }
+
+    @@media (max-width: 768px) {
+        .ks-page {
+            padding: 28px 16px 50px;
+        }
+
+        .ks-page-header {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .ks-page-header > div:last-child {
+            width: 100%;
+        }
+
+        .ks-page-header .ks-btn {
+            width: 100%;
+        }
+
+        .ks-card {
+            padding: 22px;
+            border-radius: 16px;
+        }
+
+        .ks-card .row {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .ks-card .col-12 {
+            grid-column: auto;
+        }
+    }
+</style>
+
+<div class="ks-page">
+
+    <div class="ks-container">
+
+        <div class="ks-page-header">
+
+            <div>
+                <div class="ks-eyebrow">
+                    🌱 YOUR FARM
+                </div>
+
+                <h1>Add Crop</h1>
+
+                <p>
+                    Add a crop growing on
+                    <strong>
+                        @(farm?.FarmerName ?? "your farm")'s Farm
+                    </strong>.
+                </p>
+            </div>
+
+            <div>
+
+                <a asp-controller="Home"
+                   asp-action="MyCrops"
+                   asp-route-farmId="@Model.FarmId"
+                   class="ks-btn ks-btn-outline">
+                    ← Back to Crops
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- FARM AREA SUMMARY -->
+
+        <div class="ks-card"
+             style="margin-bottom:25px;">
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:20px;
+                flex-wrap:wrap;">
+
+                <div>
+
+                    <div class="ks-eyebrow">
+                        FARM AREA
+                    </div>
+
+                    <h2 style="margin:5px 0;">
+
+                        @farm?.LandSize.ToString("0.##")
+                        @farm?.LandUnit
+
+                    </h2>
+
+                    <p style="margin:0;">
+
+                        Total farm size
+
+                    </p>
+
+                </div>
+
+
+                <div style="
+                    text-align:right;">
+
+                    <div style="
+                        font-size:15px;
+                        color:#666;">
+
+                        Already allocated
+
+                    </div>
+
+                    <div style="
+                        font-size:24px;
+                        font-weight:700;">
+
+                        @allocatedArea.ToString("0.##")
+                        @areaUnit
+
+                    </div>
+
+                </div>
+
+
+                <div style="
+                    text-align:right;">
+
+                    <div style="
+                        font-size:15px;
+                        color:#666;">
+
+                        Remaining
+
+                    </div>
+
+                    <div id="remainingArea"
+                         style="
+                        font-size:24px;
+                        font-weight:700;">
+
+                        @remainingArea.ToString("0.##")
+
+                    </div>
+
+                    <div>
+                        @areaUnit
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            @if (!areaCanBeConverted)
+            {
+                <div class="text-warning"
+                     style="margin-top:15px;">
+
+                    ⚠️ Farm and crop area units cannot currently
+                    be compared automatically.
+
+                    Please use the same unit for Bigha,
+                    or use Acre, Hectare, Guntha,
+                    Square Meter or Square Feet.
+
+                </div>
+            }
+
+        </div>
+
+
+        <!-- FORM -->
+
+        <div class="ks-card">
+
+            <form asp-controller="Home"
+                  asp-action="AddCrop"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       asp-for="FarmId" />
+
+                <input type="hidden"
+                       asp-for="UserId" />
+
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger"
+                     style="margin-bottom:20px;">
+                </div>
+
+
+                <div class="row g-4">
+
+
+                    <!-- CROP NAME -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="CropName"
+                               class="form-label">
+
+                            Crop Name
+
+                        </label>
+
+                        <input asp-for="CropName"
+                               class="form-control"
+                               placeholder="e.g. Groundnut, Wheat, Cotton" />
+
+                        <span asp-validation-for="CropName"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- VARIETY -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="Variety"
+                               class="form-label">
+
+                            Variety
+
+                        </label>
+
+                        <input asp-for="Variety"
+                               class="form-control"
+                               placeholder="e.g. GG-20" />
+
+                        <span asp-validation-for="Variety"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- SEASON -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="Season"
+                               class="form-label">
+
+                            Season
+
+                        </label>
+
+                        <select asp-for="Season"
+                                class="form-select">
+
+                            <option value="">
+                                Select season
+                            </option>
+
+                            <option value="Kharif">
+                                Kharif
+                            </option>
+
+                            <option value="Rabi">
+                                Rabi
+                            </option>
+
+                            <option value="Zaid">
+                                Zaid
+                            </option>
+
+                            <option value="Summer">
+                                Summer
+                            </option>
+
+                            <option value="Winter">
+                                Winter
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SOWING DATE -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="SowingDate"
+                               class="form-label">
+
+                            Sowing Date
+
+                        </label>
+
+                        <input asp-for="SowingDate"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="SowingDate"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- AREA -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="Area"
+                               class="form-label">
+
+                            Crop Area
+
+                        </label>
+
+                        <input asp-for="Area"
+                               id="cropArea"
+                               type="number"
+                               step="0.01"
+                               min="0"
+                               class="form-control"
+                               placeholder="e.g. 1.5" />
+
+                        <span asp-validation-for="Area"
+                              class="text-danger">
+                        </span>
+
+                        <small class="text-muted">
+                            Enter the area that this crop will occupy.
+                        </small>
+
+                    </div>
+
+
+                    <!-- AREA UNIT -->
+
+                    <div class="col-md-6">
+
+                        <label asp-for="AreaUnit"
+                               class="form-label">
+
+                            Area Unit
+
+                        </label>
+
+                        <select asp-for="AreaUnit"
+                                id="cropAreaUnit"
+                                class="form-select">
+
+                            <option value="Acre">
+                                Acre
+                            </option>
+
+                            <option value="Hectare">
+                                Hectare
+                            </option>
+
+                            <option value="Bigha">
+                                Bigha
+                            </option>
+
+                            <option value="Guntha">
+                                Guntha
+                            </option>
+
+                            <option value="Square Meter">
+                                Square Meter
+                            </option>
+
+                            <option value="Square Feet">
+                                Square Feet
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- LIVE AREA ALERT -->
+
+                    <div class="col-12">
+
+                        <div id="areaClientAlert"
+                             class="alert alert-danger"
+                             style="display:none;
+                            margin-bottom:0;">
+                        </div>
+
+                    </div>
+
+
+                    <!-- NOTES -->
+
+                    <div class="col-12">
+
+                        <label asp-for="Notes"
+                               class="form-label">
+
+                            Notes
+
+                        </label>
+
+                        <textarea asp-for="Notes"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Add any additional information about this crop...">
+                        </textarea>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BUTTONS -->
+
+                <div style="
+                    margin-top:30px;
+                    display:flex;
+                    gap:12px;
+                    flex-wrap:wrap;">
+
+                    <button type="submit"
+                            id="addCropButton"
+                            class="ks-btn ks-btn-primary">
+
+                        🌱 Add Crop
+
+                    </button>
+
+
+                    <a asp-controller="Home"
+                       asp-action="MyCrops"
+                       asp-route-farmId="@Model.FarmId"
+                       class="ks-btn ks-btn-outline">
+
+                        Cancel
+
+                    </a>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+
+    <script>
+
+        (() => {
+
+            const farmSize =
+                @Html.Raw(
+                        System.Text.Json.JsonSerializer.Serialize(
+                                farm?.LandSize ?? 0
+                        )
+                );
+
+            const farmUnit =
+                @Html.Raw(
+                        System.Text.Json.JsonSerializer.Serialize(
+                                farm?.LandUnit ?? "Acre"
+                        )
+                );
+
+            const allocated =
+                @Html.Raw(
+                        System.Text.Json.JsonSerializer.Serialize(
+                                allocatedArea
+                        )
+                );
+
+            const displayUnit =
+                @Html.Raw(
+                        System.Text.Json.JsonSerializer.Serialize(
+                                areaUnit
+                        )
+                );
+
+
+            const areaInput =
+                document.getElementById("cropArea");
+
+            const unitInput =
+                document.getElementById("cropAreaUnit");
+
+            const remaining =
+                document.getElementById("remainingArea");
+
+            const alertBox =
+                document.getElementById("areaClientAlert");
+
+            const submitButton =
+                document.getElementById("addCropButton");
+
+
+            function normalizeUnit(unit) {
+
+                return (unit || "")
+                    .trim()
+                    .toLowerCase();
+
+            }
+
+
+            function toAcres(value, unit) {
+
+                switch (normalizeUnit(unit)) {
+
+                    case "acre":
+                    case "acres":
+                        return value;
+
+                    case "hectare":
+                    case "hectares":
+                        return value * 2.47105381;
+
+                    case "guntha":
+                    case "gunthas":
+                        return value * 0.025;
+
+                    case "square meter":
+                    case "square meters":
+                    case "sqm":
+                        return value / 4046.8564224;
+
+                    case "square feet":
+                    case "square foot":
+                    case "sq ft":
+                    case "sqft":
+                        return value / 43560;
+
+                    default:
+                        return null;
+                }
+
+            }
+
+
+            function updateAreaPreview() {
+
+                const value =
+                    parseFloat(
+                        areaInput?.value || "0"
+                    );
+
+
+                const newAcres =
+                    toAcres(
+                        value,
+                        unitInput?.value
+                    );
+
+
+                const farmAcres =
+                    toAcres(
+                        farmSize,
+                        farmUnit
+                    );
+
+
+                const currentAcres =
+                    toAcres(
+                        allocated,
+                        displayUnit
+                    );
+
+
+                /*
+                 * Standard units
+                 */
+
+                if (
+                    newAcres !== null &&
+                    farmAcres !== null &&
+                    currentAcres !== null
+                ) {
+
+                    const remainingAcres =
+                        farmAcres -
+                        currentAcres -
+                        newAcres;
+
+
+                    const displayFactor =
+                        toAcres(
+                            1,
+                            farmUnit
+                        );
+
+
+                    if (
+                        displayFactor &&
+                        displayFactor > 0
+                    ) {
+
+                        const remainingInFarmUnit =
+                            remainingAcres /
+                            displayFactor;
+
+
+                        remaining.textContent =
+                            Math.max(
+                                0,
+                                remainingInFarmUnit
+                            ).toFixed(2);
+
+
+                        if (
+                            remainingAcres < -0.000001
+                        ) {
+
+                            const currentlyAvailable =
+                                Math.max(
+                                    0,
+                                    (farmAcres -
+                                        currentAcres) /
+                                        displayFactor
+                                );
+
+
+                            alertBox.style.display =
+                                "block";
+
+                            alertBox.textContent =
+                                `⚠️ Farm area exceeded. You only have ${currentlyAvailable.toFixed(2)} ${farmUnit} available.`;
+
+                            submitButton.disabled =
+                                true;
+
+                        }
+                        else {
+
+                            alertBox.style.display =
+                                "none";
+
+                            alertBox.textContent =
+                                "";
+
+                            submitButton.disabled =
+                                false;
+
+                        }
+
+                    }
+
+                }
+
+                /*
+                 * Bigha
+                 */
+
+                else if (
+
+                    normalizeUnit(farmUnit) ===
+                        "bigha"
+
+                    &&
+
+                    normalizeUnit(unitInput?.value) ===
+                        "bigha"
+
+                ) {
+
+                    const left =
+                        farmSize -
+                        allocated -
+                        value;
+
+
+                    remaining.textContent =
+                        Math.max(
+                            0,
+                            left
+                        ).toFixed(2);
+
+
+                    if (left < 0) {
+
+                        alertBox.style.display =
+                            "block";
+
+                        alertBox.textContent =
+                            `⚠️ Farm area exceeded. You only have ${Math.max(
+                                0,
+                                farmSize - allocated
+                            ).toFixed(2)} Bigha available.`;
+
+                        submitButton.disabled =
+                            true;
+
+                    }
+                    else {
+
+                        alertBox.style.display =
+                            "none";
+
+                        alertBox.textContent =
+                            "";
+
+                        submitButton.disabled =
+                            false;
+
+                    }
+
+                }
+
+                /*
+                 * Unsupported unit combination
+                 */
+
+                else {
+
+                    remaining.textContent =
+                        "—";
+
+                    alertBox.style.display =
+                        "block";
+
+                    alertBox.textContent =
+                        "⚠️ These area units cannot be compared safely. Please use a standard unit or keep Bigha consistent.";
+
+                    submitButton.disabled =
+                        false;
+
+                }
+
+            }
+
+
+            areaInput?.addEventListener(
+                "input",
+                updateAreaPreview
+            );
+
+
+            unitInput?.addEventListener(
+                "change",
+                updateAreaPreview
+            );
+
+
+            updateAreaPreview();
+
+        })();
+
+    </script>
+}

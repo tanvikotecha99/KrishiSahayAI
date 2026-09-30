@@ -1,0 +1,512 @@
+﻿@model KrishiSahayAI.Models.SoilAssessmentViewModel
+
+@{
+    ViewData["Title"] = "Understand Your Soil";
+}
+
+<link rel="stylesheet" href="~/css/krishisahay.css" />
+
+<div class="ks-soil-page">
+
+    <a href="/Home/Dashboard/@Model.Farm.Id"
+       class="ks-back-link">
+        ← Back to My Farm
+    </a>
+
+
+    <section class="ks-soil-hero">
+
+        <div class="ks-soil-hero-icon">
+            🌱
+        </div>
+
+        <span class="ks-small-label">
+            SOIL & LAND
+        </span>
+
+        <h1>
+            Understand your soil
+        </h1>
+
+        <p>
+            Let's learn what we can about the soil on your farm.
+            You don't need to know everything yet.
+        </p>
+
+        <div class="ks-soil-farm-context">
+
+            <span>🌾</span>
+
+            <div>
+                <small>Your crop</small>
+                <strong>@Model.Farm.Crop</strong>
+            </div>
+
+            <div>
+                <small>📍 Location</small>
+                <strong>@Model.Farm.Location</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <form asp-action="SoilAssessment"
+          method="post"
+          class="ks-soil-form">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden"
+               asp-for="Assessment.FarmProfileId" />
+
+
+        <!-- QUESTION 1 -->
+
+        <section class="ks-question-card">
+
+            <div class="ks-question-number">
+                01
+            </div>
+
+            <div class="ks-question-content">
+
+                <span class="ks-small-label">
+                    START HERE
+                </span>
+
+                <h2>
+                    Do you know your soil type?
+                </h2>
+
+                <p>
+                    If you're not sure, that's completely okay.
+                </p>
+
+
+                <div class="ks-option-grid">
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilKnowledge"
+                               value="Yes"
+                               required />
+
+                        <span>
+                            <strong>Yes, I know it</strong>
+                            <small>I have information about my soil.</small>
+                        </span>
+
+                    </label>
+
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilKnowledge"
+                               value="No" />
+
+                        <span>
+                            <strong>No, I don't know</strong>
+                            <small>Help me understand where to start.</small>
+                        </span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- QUESTION 2 -->
+
+        <section class="ks-question-card">
+
+            <div class="ks-question-number">
+                02
+            </div>
+
+            <div class="ks-question-content">
+
+                <span class="ks-small-label">
+                    SOIL TEXTURE
+                </span>
+
+                <h2>
+                    What does your soil feel like?
+                </h2>
+
+                <p>
+                    Choose the closest observation. This is not a
+                    laboratory soil classification.
+                </p>
+
+
+                <div class="ks-option-grid">
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilTexture"
+                               value="Sandy"
+                               required />
+
+                        <span>
+                            <strong>🏖️ Sandy</strong>
+                            <small>Feels loose and gritty.</small>
+                        </span>
+
+                    </label>
+
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilTexture"
+                               value="Loamy" />
+
+                        <span>
+                            <strong>🌱 Loamy</strong>
+                            <small>Feels balanced and crumbly.</small>
+                        </span>
+
+                    </label>
+
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilTexture"
+                               value="Clay" />
+
+                        <span>
+                            <strong>🧱 Clay</strong>
+                            <small>Feels sticky when wet.</small>
+                        </span>
+
+                    </label>
+
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilTexture"
+                               value="Rocky" />
+
+                        <span>
+                            <strong>🪨 Rocky</strong>
+                            <small>Contains many visible stones.</small>
+                        </span>
+
+                    </label>
+
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilTexture"
+                               value="Unknown" />
+
+                        <span>
+                            <strong>❓ I don't know</strong>
+                            <small>I'm not sure.</small>
+                        </span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- QUESTION 3 -->
+
+        <section class="ks-question-card">
+
+            <div class="ks-question-number">
+                03
+            </div>
+
+            <div class="ks-question-content">
+
+                <span class="ks-small-label">
+                    SOIL COLOUR
+                </span>
+
+                <h2>
+                    What colour is your soil?
+                </h2>
+
+                <p>
+                    Select the closest visual observation.
+                </p>
+
+
+                <div class="ks-option-grid">
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilColour"
+                               value="Dark brown"
+                               required />
+
+                        <span>
+                            <strong>🟤 Dark brown</strong>
+                        </span>
+
+                    </label>
+
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilColour"
+                               value="Light brown" />
+
+                        <span>
+                            <strong>🟫 Light brown</strong>
+                        </span>
+
+                    </label>
+
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilColour"
+                               value="Reddish" />
+
+                        <span>
+                            <strong>🔴 Reddish</strong>
+                        </span>
+
+                    </label>
+
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilColour"
+                               value="Black" />
+
+                        <span>
+                            <strong>⚫ Black</strong>
+                        </span>
+
+                    </label>
+
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilColour"
+                               value="Unknown" />
+
+                        <span>
+                            <strong>❓ I don't know</strong>
+                        </span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- QUESTION 4 -->
+
+        <section class="ks-question-card">
+
+            <div class="ks-question-number">
+                04
+            </div>
+
+            <div class="ks-question-content">
+
+                <span class="ks-small-label">
+                    DRAINAGE
+                </span>
+
+                <h2>
+                    What happens when it rains or you water the soil?
+                </h2>
+
+                <p>
+                    Choose the closest observation.
+                </p>
+
+
+                <div class="ks-option-grid">
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.Drainage"
+                               value="Quickly"
+                               required />
+
+                        <span>
+                            <strong>💨 Drains quickly</strong>
+                            <small>Water disappears relatively fast.</small>
+                        </span>
+
+                    </label>
+
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.Drainage"
+                               value="Slowly" />
+
+                        <span>
+                            <strong>💧 Drains slowly</strong>
+                            <small>Water remains for some time.</small>
+                        </span>
+
+                    </label>
+
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.Drainage"
+                               value="Holds water" />
+
+                        <span>
+                            <strong>💦 Holds water</strong>
+                            <small>The soil stays wet for longer.</small>
+                        </span>
+
+                    </label>
+
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.Drainage"
+                               value="Unknown" />
+
+                        <span>
+                            <strong>❓ I don't know</strong>
+                        </span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- QUESTION 5 -->
+
+        <section class="ks-question-card">
+
+            <div class="ks-question-number">
+                05
+            </div>
+
+            <div class="ks-question-content">
+
+                <span class="ks-small-label">
+                    SOIL TEST
+                </span>
+
+                <h2>
+                    Have you tested your soil?
+                </h2>
+
+                <p>
+                    A laboratory soil test provides information that
+                    cannot reliably be determined by appearance alone.
+                </p>
+
+
+                <div class="ks-option-grid">
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilTestStatus"
+                               value="Yes"
+                               required />
+
+                        <span>
+                            <strong>✅ Yes</strong>
+                            <small>I have a soil test report.</small>
+                        </span>
+
+                    </label>
+
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilTestStatus"
+                               value="No" />
+
+                        <span>
+                            <strong>❌ No</strong>
+                            <small>I haven't tested it.</small>
+                        </span>
+
+                    </label>
+
+
+                    <label class="ks-option">
+
+                        <input type="radio"
+                               asp-for="Assessment.SoilTestStatus"
+                               value="Unknown" />
+
+                        <span>
+                            <strong>❓ I don't know</strong>
+                        </span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="ks-soil-submit">
+
+            <div>
+
+                <strong>
+                    Ready to understand your soil?
+                </strong>
+
+                <p>
+                    We'll use your answers to suggest useful
+                    next learning steps.
+                </p>
+
+            </div>
+
+            <button type="submit"
+                    class="ks-btn ks-btn-primary">
+
+                Assess My Soil →
+
+            </button>
+
+        </section>
+
+    </form>
+
+</div>

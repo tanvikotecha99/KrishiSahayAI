@@ -1,0 +1,712 @@
+﻿@model KrishiSahayAI.Models.MyCropsViewModel
+
+@{
+    ViewData["Title"] = "My Crops";
+
+    var farmSize = Model.Farm.LandSize;
+
+    var allocationPercentage =
+        farmSize > 0
+            ? Math.Min(
+                100,
+                (Model.AllocatedArea / farmSize) * 100
+              )
+            : 0;
+}
+
+<style>
+    /* =========================================================
+       MY CROPS PAGE
+       Visual-only styling. Existing functionality preserved.
+       ========================================================= */
+
+    .ks-crops-page {
+        padding-bottom: 40px;
+    }
+
+    .ks-crop-farm-card {
+        margin-bottom: 25px;
+    }
+
+    .ks-crop-farm-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .ks-crop-farm-icon {
+        width: 68px;
+        height: 68px;
+        border-radius: 18px;
+        background: #f1f7f1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 38px;
+        flex-shrink: 0;
+    }
+
+    .ks-crop-area-card {
+        margin-bottom: 25px;
+    }
+
+    .ks-crop-area-content {
+        display: flex;
+        justify-content: space-between;
+        gap: 25px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .ks-crop-progress-wrapper {
+        min-width: 220px;
+        flex: 1;
+        max-width: 420px;
+    }
+
+    .ks-crop-progress-track {
+        height: 12px;
+        background: #e8eee8;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .ks-crop-progress-bar {
+        height: 100%;
+        background: #2e7d32;
+        border-radius: 999px;
+        transition: width .3s ease;
+    }
+
+    .ks-crop-progress-label {
+        margin-top: 8px;
+        text-align: right;
+        font-size: 13px;
+        color: #666;
+    }
+
+    .ks-crop-grid {
+        align-items: stretch;
+    }
+
+    .ks-crop-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ks-crop-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .ks-crop-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: #f1f7f1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        flex-shrink: 0;
+    }
+
+    .ks-crop-stats {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 25px;
+    }
+
+    .ks-crop-stat {
+        padding: 14px;
+        border: 1px solid #e4ebe4;
+        border-radius: 14px;
+        background: #f8faf8;
+    }
+
+    .ks-crop-stat-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #6b756b;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .ks-crop-stat-value {
+        font-size: 15px;
+        font-weight: 600;
+        color: #263326;
+        line-height: 1.4;
+    }
+
+    .ks-crop-notes {
+        margin-top: 20px;
+        padding: 14px 16px;
+        border-left: 3px solid #2e7d32;
+        background: #f8faf8;
+        border-radius: 8px;
+    }
+
+    .ks-crop-actions {
+        margin-top: auto;
+        padding-top: 22px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .ks-crop-open {
+        flex: 1 1 180px;
+        text-align: center;
+    }
+
+    .ks-crop-empty {
+        text-align: center;
+        padding: 55px 30px;
+    }
+
+    .ks-crop-empty-icon {
+        width: 78px;
+        height: 78px;
+        margin: 0 auto 18px;
+        border-radius: 22px;
+        background: #f1f7f1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 46px;
+    }
+
+    .ks-crop-header-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+@@media (max-width: 900px) {
+        .ks-crop-header-actions {
+            width: 100%;
+        }
+    }
+
+    @@media (max-width: 650px) {
+
+        .ks-crop-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .ks-crop-area-content {
+            align-items: stretch;
+        }
+
+        .ks-crop-progress-wrapper {
+            max-width: none;
+            width: 100%;
+        }
+
+        .ks-crop-header-actions {
+            width: 100%;
+        }
+
+        .ks-crop-header-actions .ks-btn {
+            flex: 1;
+            text-align: center;
+        }
+
+        .ks-crop-actions {
+            flex-direction: column;
+        }
+
+        .ks-crop-actions > * {
+            width: 100%;
+        }
+
+        .ks-crop-actions form {
+            display: block !important;
+        }
+
+        .ks-crop-actions .ks-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="ks-page ks-crops-page">
+
+    <div class="ks-container">
+
+
+        <!-- =====================================================
+             HEADER
+             ===================================================== -->
+
+        <div class="ks-page-header">
+
+            <div>
+
+                <div class="ks-eyebrow">
+                    🌱 YOUR CROPS
+                </div>
+
+                <h1>
+                    My Crops
+                </h1>
+
+                <p>
+                    Manage the crops growing on
+                    <strong>
+                        @Model.Farm.FarmerName's Farm
+                    </strong>.
+                </p>
+
+            </div>
+
+
+            <div class="ks-crop-header-actions">
+
+                <a asp-controller="Home"
+                   asp-action="Dashboard"
+                   asp-route-id="@Model.Farm.Id"
+                   class="ks-btn ks-btn-outline">
+
+                    ← Back to Farm
+
+                </a>
+
+                <a asp-controller="Home"
+                   asp-action="AddCrop"
+                   asp-route-farmId="@Model.Farm.Id"
+                   class="ks-btn ks-btn-primary">
+
+                    + Add Crop
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             FARM INFORMATION
+             ===================================================== -->
+
+        <div class="ks-card ks-crop-farm-card">
+
+            <div class="ks-crop-farm-content">
+
+                <div>
+
+                    <div class="ks-eyebrow">
+                        FARM #@Model.Farm.Id
+                    </div>
+
+                    <h2 style="margin:5px 0 8px;">
+                        @Model.Farm.FarmerName's Farm
+                    </h2>
+
+                    <p style="margin:0;">
+                        📍 @Model.Farm.Location
+                        &nbsp; • &nbsp;
+                        🌾 @Model.Farm.LandSize
+                        @Model.Farm.LandUnit
+                    </p>
+
+                </div>
+
+
+                <div class="ks-crop-farm-icon">
+                    🌾
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             FARM AREA
+             ===================================================== -->
+
+        <div class="ks-card ks-crop-area-card">
+
+            <div class="ks-crop-area-content">
+
+                <div>
+
+                    <div class="ks-eyebrow">
+                        FARM AREA
+                    </div>
+
+                    <h2 style="margin:5px 0 6px;">
+
+                        @Model.AllocatedArea.ToString("0.##")
+                        /
+                        @Model.Farm.LandSize.ToString("0.##")
+                        @Model.AreaDisplayUnit
+                        allocated
+
+                    </h2>
+
+                    <p style="margin:0;">
+
+                        <strong>
+                            @Model.RemainingArea.ToString("0.##")
+                        </strong>
+
+                        @Model.AreaDisplayUnit
+                        remaining
+
+                    </p>
+
+                </div>
+
+
+                <div class="ks-crop-progress-wrapper">
+
+                    <div class="ks-crop-progress-track">
+
+                        <div class="ks-crop-progress-bar"
+                             style="width:@allocationPercentage%;">
+                        </div>
+
+                    </div>
+
+                    <div class="ks-crop-progress-label">
+
+                        @allocationPercentage.ToString("0.#")%
+                        of farm allocated
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            @if (!Model.AreaCanBeConverted)
+            {
+
+                <div class="text-warning"
+                     style="margin-top:15px;">
+
+                    ⚠️ Area totals are shown only when the
+                    farm and crop units can be compared safely.
+
+                    Bigha varies by region, so keep Bigha
+                    consistent.
+
+                </div>
+
+            }
+
+        </div>
+
+
+        <!-- =====================================================
+             NO CROPS
+             ===================================================== -->
+
+        @if (Model.Crops == null ||
+             Model.Crops.Count == 0)
+        {
+
+            <div class="ks-card ks-crop-empty">
+
+                <div class="ks-crop-empty-icon">
+                    🌱
+                </div>
+
+                <h2>
+                    No crops added yet
+                </h2>
+
+                <p>
+                    Add crops to this farm so
+                    KrishiSahay can provide
+                    crop-specific guidance.
+                </p>
+
+                <a asp-controller="Home"
+                   asp-action="AddCrop"
+                   asp-route-farmId="@Model.Farm.Id"
+                   class="ks-btn ks-btn-primary"
+                   style="margin-top:15px;">
+
+                    + Add Crop
+
+                </a>
+
+            </div>
+
+        }
+        else
+        {
+
+            <!-- =================================================
+                 CROPS
+                 ================================================= -->
+
+            <div class="ks-grid ks-crop-grid">
+
+                @foreach (var crop in Model.Crops)
+                {
+
+                    <div class="ks-card ks-crop-card">
+
+
+                        <!-- CROP HEADER -->
+
+                        <div class="ks-crop-card-header">
+
+                            <div>
+
+                                <div class="ks-eyebrow">
+                                    CROP #@crop.Id
+                                </div>
+
+                                <h2 style="
+                                    margin:5px 0 6px;">
+
+                                    @crop.CropName
+
+                                </h2>
+
+
+                                @if (!string.IsNullOrWhiteSpace(
+                                    crop.Variety))
+                                {
+
+                                    <p style="margin:0;">
+
+                                        Variety:
+                                        @crop.Variety
+
+                                    </p>
+
+                                }
+
+                            </div>
+
+
+                            <div class="ks-crop-icon">
+                                🌱
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             CROP DETAILS
+                             ================================================= -->
+
+                        <div class="ks-crop-stats">
+
+
+                            <!-- SEASON -->
+
+                            <div class="ks-crop-stat">
+
+                                <div class="ks-crop-stat-label">
+                                    Season
+                                </div>
+
+                                <div class="ks-crop-stat-value">
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        crop.Season)
+                                        ? "Not specified"
+                                        : crop.Season)
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- AREA -->
+
+                            <div class="ks-crop-stat">
+
+                                <div class="ks-crop-stat-label">
+                                    Area
+                                </div>
+
+                                <div class="ks-crop-stat-value">
+
+                                    @crop.Area
+                                    @crop.AreaUnit
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- SOWING DATE -->
+
+                            <div class="ks-crop-stat">
+
+                                <div class="ks-crop-stat-label">
+                                    Sowing Date
+                                </div>
+
+                                <div class="ks-crop-stat-value">
+
+                                    @(crop.SowingDate.HasValue
+                                        ? crop.SowingDate.Value
+                                            .ToString("dd MMM yyyy")
+                                        : "Not specified")
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ADDED DATE -->
+
+                            <div class="ks-crop-stat">
+
+                                <div class="ks-crop-stat-label">
+                                    Added
+                                </div>
+
+                                <div class="ks-crop-stat-value">
+
+                                    @(crop.CreatedAt
+                                        .ToLocalTime()
+                                        .ToString("dd MMM yyyy"))
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             NOTES
+                             ================================================= -->
+
+                        @if (!string.IsNullOrWhiteSpace(
+                            crop.Notes))
+                        {
+
+                            <div class="ks-crop-notes">
+
+                                <strong>
+                                    Notes
+                                </strong>
+
+                                <p style="
+                                    margin:5px 0 0;">
+
+                                    @crop.Notes
+
+                                </p>
+
+                            </div>
+
+                        }
+
+
+                        <!-- =================================================
+                             ACTIONS
+                             ================================================= -->
+
+                        <div class="ks-crop-actions">
+
+
+                            <!-- CROP DASHBOARD - PRIMARY -->
+
+                            <a asp-controller="Home"
+                               asp-action="CropDashboard"
+                               asp-route-farmId="@Model.Farm.Id"
+                               asp-route-cropId="@crop.Id"
+                               class="ks-btn ks-btn-primary ks-crop-open">
+
+                                🌾 Open Crop →
+
+                            </a>
+
+
+                            <!-- AI CROP DOCTOR -->
+
+                            <a asp-controller="Home"
+                               asp-action="CropDoctor"
+                               asp-route-farmId="@Model.Farm.Id"
+                               asp-route-cropId="@crop.Id"
+                               class="ks-btn ks-btn-outline">
+
+                                🔬 AI Crop Doctor →
+
+                            </a>
+
+
+                            <!-- EDIT CROP -->
+
+                            <a asp-controller="Home"
+                               asp-action="EditCrop"
+                               asp-route-farmId="@Model.Farm.Id"
+                               asp-route-cropId="@crop.Id"
+                               class="ks-btn ks-btn-outline">
+
+                                ✏️ Edit
+
+                            </a>
+
+
+                            <!-- DELETE CROP -->
+
+                            <form asp-controller="Home"
+                                  asp-action="DeleteCrop"
+                                  method="post"
+                                  style="display:inline;"
+                                  onsubmit="return confirm(
+                                      'Delete @crop.CropName from this farm? This will free @crop.Area @crop.AreaUnit of farm area.'
+                                  );">
+
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden"
+                                       name="farmId"
+                                       value="@Model.Farm.Id" />
+
+                                <input type="hidden"
+                                       name="cropId"
+                                       value="@crop.Id" />
+
+                                <button type="submit"
+                                        class="ks-btn ks-btn-outline"
+                                        style="
+                                            border-color:#c62828;
+                                            color:#c62828;">
+
+                                    🗑 Delete
+
+                                </button>
+
+                            </form>
+
+
+                        </div>
+
+
+                    </div>
+
+                }
+
+            </div>
+
+        }
+
+
+    </div>
+
+</div>

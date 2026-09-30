@@ -1,0 +1,494 @@
+﻿@model KrishiSahayAI.Models.SoilAssessmentViewModel
+
+@{
+    ViewData["Title"] = "Your Soil Results";
+}
+
+<link rel="stylesheet" href="~/css/krishisahay.css" />
+
+<div class="ks-soil-result-page">
+
+    <a href="/Home/Dashboard/@Model.Farm.Id"
+       class="ks-back-link">
+        ← Back to My Farm
+    </a>
+
+
+    <!-- RESULT HERO -->
+
+    <section class="ks-result-hero">
+
+        <div class="ks-result-icon">
+            🌱
+        </div>
+
+        <span class="ks-small-label">
+            YOUR SOIL LEARNING RESULT
+        </span>
+
+        <h1>
+            Here's what we learned
+        </h1>
+
+        <p>
+            We've used your observations to identify useful
+            next steps for your farm.
+        </p>
+
+    </section>
+
+
+    <!-- FARM SUMMARY -->
+
+    <section class="ks-result-farm-card">
+
+        <div class="ks-result-farm-main">
+
+            <div class="ks-result-crop-icon">
+                🌾
+            </div>
+
+            <div>
+
+                <span>
+                    YOUR FARM
+                </span>
+
+                <h2>
+                    @Model.Farm.Crop
+                </h2>
+
+                <p>
+                    📍 @Model.Farm.Location
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="ks-result-farm-details">
+
+            <div>
+                <small>
+                    Soil knowledge
+                </small>
+
+                <strong>
+                    @Model.Assessment.SoilKnowledge
+                </strong>
+            </div>
+
+            <div>
+                <small>
+                    Soil texture
+                </small>
+
+                <strong>
+                    @Model.Assessment.SoilTexture
+                </strong>
+            </div>
+
+            <div>
+                <small>
+                    Soil colour
+                </small>
+
+                <strong>
+                    @Model.Assessment.SoilColour
+                </strong>
+            </div>
+
+            <div>
+                <small>
+                    Drainage
+                </small>
+
+                <strong>
+                    @Model.Assessment.Drainage
+                </strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- IMPORTANT NOTE -->
+
+    <section class="ks-result-note">
+
+        <div class="ks-result-note-icon">
+            ℹ️
+        </div>
+
+        <div>
+
+            <strong>
+                This is a learning assessment
+            </strong>
+
+            <p>
+                Your answers are observations, not a laboratory
+                soil classification. For accurate information
+                about pH and nutrients, use a proper soil test.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- YOUR OBSERVATION RESULT -->
+
+    <section class="ks-result-section">
+
+        <span class="ks-small-label">
+            WHAT YOUR ANSWERS TELL US
+        </span>
+
+        <h2>
+            Your soil learning summary
+        </h2>
+
+        <div class="ks-result-summary">
+
+            @foreach (var paragraph in Model.Assessment.Result
+                .Split(
+                    new[] { "\r\n\r\n", "\n\n" },
+                    StringSplitOptions.RemoveEmptyEntries))
+            {
+                <div class="ks-result-summary-item">
+
+                    <span>
+                        ✓
+                    </span>
+
+                    <p>
+                        @paragraph
+                    </p>
+
+                </div>
+            }
+
+        </div>
+
+    </section>
+
+
+    <!-- CROP SPECIFIC GUIDANCE -->
+    @if (Model.CropKnowledge != null)
+    {
+        <section class="ks-crop-guidance">
+
+            <div class="ks-crop-guidance-header">
+
+                <div>
+
+                    <span class="ks-small-label">
+                        CROP-SPECIFIC GUIDANCE
+                    </span>
+
+                    <h2>
+                        What @Model.CropKnowledge.CropName needs
+                    </h2>
+
+                    <p>
+                        This gives you a starting point for
+                        understanding your crop. Local conditions,
+                        season and crop variety can change recommendations.
+                    </p>
+
+                </div>
+
+                <div class="ks-crop-guidance-icon">
+                    🌾
+                </div>
+
+            </div>
+
+
+            <div class="ks-crop-guidance-grid">
+
+                <!-- SOIL -->
+
+                <div class="ks-crop-guidance-card">
+
+                    <span>
+                        🌍
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Soil
+                        </h3>
+
+                        <p>
+                            @Model.CropKnowledge.SoilRequirements
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- WATER -->
+
+                <div class="ks-crop-guidance-card">
+
+                    <span>
+                        💧
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Water
+                        </h3>
+
+                        <p>
+                            @Model.CropKnowledge.WaterRequirements
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CLIMATE -->
+
+                <div class="ks-crop-guidance-card">
+
+                    <span>
+                        ☀️
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Climate
+                        </h3>
+
+                        <p>
+                            @Model.CropKnowledge.ClimateRequirements
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PLANTING -->
+
+                <div class="ks-crop-guidance-card">
+
+                    <span>
+                        🌱
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Planting
+                        </h3>
+
+                        <p>
+                            @Model.CropKnowledge.PlantingGuidance
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- GROWTH -->
+
+                <div class="ks-crop-guidance-card">
+
+                    <span>
+                        🌿
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Growth & Care
+                        </h3>
+
+                        <p>
+                            @Model.CropKnowledge.GrowthGuidance
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- HARVEST -->
+
+                <div class="ks-crop-guidance-card">
+
+                    <span>
+                        🌾
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Harvest
+                        </h3>
+
+                        <p>
+                            @Model.CropKnowledge.HarvestGuidance
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- IMPORTANT CROP NOTE -->
+
+            <div class="ks-crop-important">
+
+                <span>
+                    ⚠️
+                </span>
+
+                <div>
+
+                    <strong>
+                        Important
+                    </strong>
+
+                    <p>
+                        @Model.CropKnowledge.ImportantNote
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+    }
+
+
+    <!-- NEXT STEPS -->
+
+    <section class="ks-next-learning">
+
+        <div>
+
+            <span class="ks-small-label">
+                RECOMMENDED NEXT STEP
+            </span>
+
+            <h2>
+                Get to know your soil better
+            </h2>
+
+            <p>
+                The next useful step is to understand your soil
+                test results, especially pH and available nutrients.
+                This information can help you make better
+                crop-management decisions.
+            </p>
+
+        </div>
+
+
+        <div class="ks-next-learning-list">
+
+            <div>
+
+                <span>
+                    01
+                </span>
+
+                <div>
+
+                    <strong>
+                        Learn about soil testing
+                    </strong>
+
+                    <p>
+                        Understand what a basic soil test measures.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    02
+                </span>
+
+                <div>
+
+                    <strong>
+                        Record your soil information
+                    </strong>
+
+                    <p>
+                        Keep your soil report with your farm records.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    03
+                </span>
+
+                <div>
+
+                    <strong>
+                        Connect soil with your crop
+                    </strong>
+
+                    <p>
+                        Use the crop guidance above as your
+                        starting point.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ACTIONS -->
+
+    <section class="ks-result-actions">
+
+        <a href="/Home/Teach?farmId=@Model.Farm.Id"
+           class="ks-btn ks-btn-secondary">
+
+            📚 Learn More About Soil
+
+        </a>
+
+
+        <a href="/Home/Dashboard/@Model.Farm.Id"
+           class="ks-btn ks-btn-primary">
+
+            Back to My Farm →
+
+        </a>
+
+    </section>
+
+</div>

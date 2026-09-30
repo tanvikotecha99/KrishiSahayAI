@@ -1,0 +1,1075 @@
+﻿@{
+    ViewData["Title"] = "Local Weather";
+}
+
+<style>
+    .local-weather-page {
+        max-width: 1100px;
+        margin: 50px auto;
+        padding: 0 20px 60px;
+    }
+
+    .local-weather-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 22px;
+        padding: 45px 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    .local-weather-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 22px;
+        border-radius: 22px;
+        background: #eef7ed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+    }
+
+    .local-weather-card h1 {
+        margin: 0 0 12px;
+        font-size: 32px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .local-weather-card > p {
+        max-width: 620px;
+        margin: 0 auto 28px;
+        color: #6b7280;
+        font-size: 16px;
+        line-height: 1.7;
+    }
+
+    .location-btn {
+        border: none;
+        border-radius: 10px;
+        padding: 13px 24px;
+        background: #2f7d32;
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .location-btn:hover {
+        background: #256628;
+    }
+
+    .location-btn:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+
+    .location-status {
+        margin-top: 20px;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 25px;
+        color: #2f7d32;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+
+    /* =========================================================
+       WEATHER RESULT
+       ========================================================= */
+
+    .weather-result {
+        display: none;
+        margin-top: 30px;
+        text-align: left;
+    }
+
+    .weather-result.show {
+        display: block;
+    }
+
+    .weather-location {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .weather-location h2 {
+        margin: 0 0 6px;
+        color: #1f2937;
+        font-size: 26px;
+    }
+
+    .weather-location p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+
+    /* =========================================================
+       CURRENT WEATHER
+       ========================================================= */
+
+    .current-weather {
+        background: linear-gradient(
+            135deg,
+            #eef7ed,
+            #f7fbf6
+        );
+        border: 1px solid #dcebd9;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 25px;
+    }
+
+    .current-main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 25px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .weather-big-icon {
+        font-size: 64px;
+    }
+
+    .current-temperature {
+        font-size: 52px;
+        font-weight: 700;
+        color: #1f2937;
+        line-height: 1;
+    }
+
+    .current-description {
+        margin-top: 8px;
+        color: #6b7280;
+        font-size: 16px;
+    }
+
+
+    /* =========================================================
+       WEATHER STATS
+       ========================================================= */
+
+    .weather-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+    }
+
+    .weather-stat {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 18px 12px;
+        text-align: center;
+    }
+
+    .weather-stat-icon {
+        font-size: 22px;
+        margin-bottom: 7px;
+    }
+
+    .weather-stat-label {
+        color: #6b7280;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
+    .weather-stat-value {
+        color: #1f2937;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+
+    /* =========================================================
+       FORECAST
+       ========================================================= */
+
+    .forecast-section {
+        margin-top: 25px;
+    }
+
+    .forecast-section h3 {
+        margin: 0 0 15px;
+        color: #1f2937;
+        font-size: 21px;
+    }
+
+    .forecast-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+    }
+
+    .forecast-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 16px 8px;
+        text-align: center;
+    }
+
+    .forecast-day {
+        color: #1f2937;
+        font-weight: 700;
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+    .forecast-icon {
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+
+    .forecast-description {
+        color: #6b7280;
+        font-size: 11px;
+        min-height: 30px;
+        margin-bottom: 8px;
+    }
+
+    .forecast-temperature {
+        font-size: 13px;
+        color: #1f2937;
+        font-weight: 600;
+    }
+
+    .forecast-rain {
+        margin-top: 7px;
+        color: #2f7d32;
+        font-size: 11px;
+    }
+
+
+    /* =========================================================
+       ERROR
+       ========================================================= */
+
+    .weather-error {
+        display: none;
+        margin-top: 20px;
+        padding: 14px 18px;
+        border-radius: 10px;
+        background: #fff5f5;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        font-size: 14px;
+    }
+
+    .weather-error.show {
+        display: block;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @@media (max-width: 800px) {
+
+        .weather-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .forecast-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 500px) {
+
+        .local-weather-page {
+            margin-top: 25px;
+            padding: 0 12px 40px;
+        }
+
+        .local-weather-card {
+            padding: 30px 18px;
+        }
+
+        .local-weather-card h1 {
+            font-size: 26px;
+        }
+
+        .current-temperature {
+            font-size: 42px;
+        }
+
+        .weather-stats {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .forecast-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+
+
+<div class="local-weather-page">
+
+    <div class="local-weather-card">
+
+        <div class="local-weather-icon">
+            📍
+        </div>
+
+        <h1>
+            Weather Near You
+        </h1>
+
+        <p>
+            Get the current weather conditions for your present location.
+            Allow location access so KrishiSahay can determine your area.
+        </p>
+
+        <button type="button"
+                id="locationButton"
+                class="location-btn"
+                onclick="getCurrentLocation()">
+            📍 Use My Current Location
+        </button>
+
+        <div id="locationStatus"
+             class="location-status">
+        </div>
+
+
+        <!-- =====================================================
+             WEATHER ERROR
+             ===================================================== -->
+
+        <div id="weatherError"
+             class="weather-error">
+        </div>
+
+
+        <!-- =====================================================
+             WEATHER RESULT
+             ===================================================== -->
+
+        <div id="weatherResult"
+             class="weather-result">
+
+            <!-- Location -->
+
+            <div class="weather-location">
+
+                <h2 id="weatherLocation">
+                    Current Location
+                </h2>
+
+                <p id="weatherTimezone">
+                </p>
+
+            </div>
+
+
+            <!-- Current Weather -->
+
+            <div class="current-weather">
+
+                <div class="current-main">
+
+                    <div id="weatherIcon"
+                         class="weather-big-icon">
+                        🌤️
+                    </div>
+
+                    <div>
+
+                        <div id="weatherTemperature"
+                             class="current-temperature">
+                            --°C
+                        </div>
+
+                        <div id="weatherDescription"
+                             class="current-description">
+                            Loading weather...
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Weather statistics -->
+
+                <div class="weather-stats">
+
+                    <div class="weather-stat">
+
+                        <div class="weather-stat-icon">
+                            💧
+                        </div>
+
+                        <div class="weather-stat-label">
+                            Humidity
+                        </div>
+
+                        <div id="weatherHumidity"
+                             class="weather-stat-value">
+                            --%
+                        </div>
+
+                    </div>
+
+
+                    <div class="weather-stat">
+
+                        <div class="weather-stat-icon">
+                            💨
+                        </div>
+
+                        <div class="weather-stat-label">
+                            Wind
+                        </div>
+
+                        <div id="weatherWind"
+                             class="weather-stat-value">
+                            -- km/h
+                        </div>
+
+                    </div>
+
+
+                    <div class="weather-stat">
+
+                        <div class="weather-stat-icon">
+                            🌧️
+                        </div>
+
+                        <div class="weather-stat-label">
+                            Rainfall
+                        </div>
+
+                        <div id="weatherRain"
+                             class="weather-stat-value">
+                            -- mm
+                        </div>
+
+                    </div>
+
+
+                    <div class="weather-stat">
+
+                        <div class="weather-stat-icon">
+                            ☀️
+                        </div>
+
+                        <div class="weather-stat-label">
+                            Day / Night
+                        </div>
+
+                        <div id="weatherDayNight"
+                             class="weather-stat-value">
+                            --
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- 7 Day Forecast -->
+
+            <div class="forecast-section">
+
+                <h3>
+                    7-Day Forecast
+                </h3>
+
+                <div id="forecastGrid"
+                     class="forecast-grid">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="back-link">
+            ← Back to KrishiSahay
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // =========================================================
+    // GET CURRENT LOCATION
+    // =========================================================
+
+    function getCurrentLocation() {
+
+        const status =
+            document.getElementById("locationStatus");
+
+        const button =
+            document.getElementById("locationButton");
+
+        const weatherResult =
+            document.getElementById("weatherResult");
+
+        const weatherError =
+            document.getElementById("weatherError");
+
+
+        // Hide previous results
+
+        weatherResult.classList.remove("show");
+
+        weatherError.classList.remove("show");
+
+
+        // Browser does not support geolocation
+
+        if (!navigator.geolocation) {
+
+            status.innerText =
+                "Location services are not supported by this browser.";
+
+            return;
+        }
+
+
+        // Disable button while loading
+
+        button.disabled = true;
+
+        button.innerText =
+            "📍 Detecting Location...";
+
+
+        status.innerText =
+            "Requesting your location permission...";
+
+
+        // Get GPS coordinates
+
+        navigator.geolocation.getCurrentPosition(
+
+            function (position) {
+
+                const latitude =
+                    position.coords.latitude;
+
+                const longitude =
+                    position.coords.longitude;
+
+
+                status.innerText =
+                    "Location detected. Getting weather...";
+
+
+                // Send coordinates to ASP.NET
+
+                getWeather(
+                    latitude,
+                    longitude
+                );
+
+            },
+
+            function (error) {
+
+                button.disabled = false;
+
+                button.innerText =
+                    "📍 Use My Current Location";
+
+
+                if (error.code === 1) {
+
+                    status.innerText =
+                        "Location permission was denied. Please allow location access and try again.";
+
+                }
+                else if (error.code === 2) {
+
+                    status.innerText =
+                        "Your location could not be determined.";
+
+                }
+                else if (error.code === 3) {
+
+                    status.innerText =
+                        "Location request timed out. Please try again.";
+
+                }
+                else {
+
+                    status.innerText =
+                        "Unable to determine your location.";
+                }
+            },
+
+            {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 300000
+            }
+        );
+    }
+
+
+    // =========================================================
+    // GET WEATHER FROM ASP.NET
+    // =========================================================
+
+    async function getWeather(
+        latitude,
+        longitude
+    ) {
+
+        const status =
+            document.getElementById("locationStatus");
+
+        const button =
+            document.getElementById("locationButton");
+
+        const weatherResult =
+            document.getElementById("weatherResult");
+
+        const weatherError =
+            document.getElementById("weatherError");
+
+
+        try {
+
+            const url =
+                '@Url.Action("LocalWeatherData", "Weather")' +
+                '?latitude=' +
+                encodeURIComponent(latitude) +
+                '&longitude=' +
+                encodeURIComponent(longitude);
+
+
+            const response =
+                await fetch(url);
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok ||
+                !data.success) {
+
+                throw new Error(
+                    data.message ||
+                    "Weather information could not be retrieved."
+                );
+            }
+
+
+            // Display weather
+
+            displayWeather(
+                data.weather
+            );
+
+
+            status.innerText =
+                "Weather updated for your current location.";
+
+            weatherResult.classList.add("show");
+
+
+        }
+        catch (error) {
+
+            console.error(
+                "Weather error:",
+                error
+            );
+
+
+            weatherError.innerText =
+                error.message ||
+                "Unable to retrieve weather information.";
+
+
+            weatherError.classList.add(
+                "show"
+            );
+
+
+            status.innerText =
+                "Weather could not be loaded.";
+
+        }
+        finally {
+
+            button.disabled = false;
+
+            button.innerText =
+                "📍 Refresh My Location";
+        }
+    }
+
+
+    // =========================================================
+    // DISPLAY WEATHER
+    // =========================================================
+
+    function displayWeather(weather) {
+
+        if (!weather) {
+            return;
+        }
+
+
+        // Location
+
+        document.getElementById(
+            "weatherLocation"
+        ).innerText =
+            weather.locationName ||
+            "Current Location";
+
+
+        document.getElementById(
+            "weatherTimezone"
+        ).innerText =
+            weather.timezone
+            ? "Timezone: " + weather.timezone
+            : "";
+
+
+        // Temperature
+
+        document.getElementById(
+            "weatherTemperature"
+        ).innerText =
+            formatNumber(
+                weather.temperatureC
+            ) + "°C";
+
+
+        // Description
+
+        document.getElementById(
+            "weatherDescription"
+        ).innerText =
+            weather.weatherDescription ||
+            "Weather conditions unavailable";
+
+
+        // Weather icon
+
+        document.getElementById(
+            "weatherIcon"
+        ).innerText =
+            getWeatherIcon(
+                weather.weatherCode,
+                weather.isDay
+            );
+
+
+        // Humidity
+
+        document.getElementById(
+            "weatherHumidity"
+        ).innerText =
+            formatNumber(
+                weather.humidityPercent
+            ) + "%";
+
+
+        // Wind
+
+        document.getElementById(
+            "weatherWind"
+        ).innerText =
+            formatNumber(
+                weather.windSpeedKmh
+            ) + " km/h";
+
+
+        // Rain
+
+        document.getElementById(
+            "weatherRain"
+        ).innerText =
+            formatNumber(
+                weather.precipitationMm
+            ) + " mm";
+
+
+        // Day / Night
+
+        document.getElementById(
+            "weatherDayNight"
+        ).innerText =
+            weather.isDay
+                ? "Day"
+                : "Night";
+
+
+        // Forecast
+
+        displayForecast(
+            weather.forecast
+        );
+    }
+
+
+    // =========================================================
+    // DISPLAY 7-DAY FORECAST
+    // =========================================================
+
+    function displayForecast(forecast) {
+
+        const grid =
+            document.getElementById(
+                "forecastGrid"
+            );
+
+
+        grid.innerHTML = "";
+
+
+        if (!forecast ||
+            forecast.length === 0) {
+
+            grid.innerHTML =
+                "<p>Forecast information unavailable.</p>";
+
+            return;
+        }
+
+
+        forecast.forEach(function (day) {
+
+            const date =
+                new Date(day.date);
+
+
+            const dayName =
+                date.toLocaleDateString(
+                    undefined,
+                    {
+                        weekday: "short"
+                    }
+                );
+
+
+            const maxTemp =
+                formatNumber(
+                    day.maxTemperatureC
+                );
+
+
+            const minTemp =
+                formatNumber(
+                    day.minTemperatureC
+                );
+
+
+            const rainProbability =
+                formatNumber(
+                    day.precipitationProbabilityPercent
+                );
+
+
+            const rain =
+                formatNumber(
+                    day.precipitationMm
+                );
+
+
+            const icon =
+                getWeatherIcon(
+                    day.weatherCode,
+                    true
+                );
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "forecast-card";
+
+
+            card.innerHTML = `
+
+                <div class="forecast-day">
+                    ${dayName}
+                </div>
+
+                <div class="forecast-icon">
+                    ${icon}
+                </div>
+
+                <div class="forecast-description">
+                    ${day.weatherDescription || ""}
+                </div>
+
+                <div class="forecast-temperature">
+                    ${maxTemp}° / ${minTemp}°
+                </div>
+
+                <div class="forecast-rain">
+                    💧 ${rainProbability}% · ${rain} mm
+                </div>
+
+            `;
+
+
+            grid.appendChild(card);
+        });
+    }
+
+
+    // =========================================================
+    // WEATHER ICON
+    // =========================================================
+
+    function getWeatherIcon(
+        code,
+        isDay
+    ) {
+
+        if (code === 0) {
+
+            return isDay
+                ? "☀️"
+                : "🌙";
+        }
+
+
+        if (
+            code === 1 ||
+            code === 2
+        ) {
+
+            return isDay
+                ? "🌤️"
+                : "🌙";
+        }
+
+
+        if (code === 3) {
+
+            return "☁️";
+        }
+
+
+        if (
+            code === 45 ||
+            code === 48
+        ) {
+
+            return "🌫️";
+        }
+
+
+        if (
+            code === 51 ||
+            code === 53 ||
+            code === 55 ||
+            code === 56 ||
+            code === 57
+        ) {
+
+            return "🌦️";
+        }
+
+
+        if (
+            code === 61 ||
+            code === 63 ||
+            code === 65 ||
+            code === 80 ||
+            code === 81 ||
+            code === 82
+        ) {
+
+            return "🌧️";
+        }
+
+
+        if (
+            code === 66 ||
+            code === 67
+        ) {
+
+            return "🌧️";
+        }
+
+
+        if (
+            code === 71 ||
+            code === 73 ||
+            code === 75 ||
+            code === 77 ||
+            code === 85 ||
+            code === 86
+        ) {
+
+            return "❄️";
+        }
+
+
+        if (
+            code === 95 ||
+            code === 96 ||
+            code === 99
+        ) {
+
+            return "⛈️";
+        }
+
+
+        return "🌤️";
+    }
+
+
+    // =========================================================
+    // NUMBER FORMAT
+    // =========================================================
+
+    function formatNumber(value) {
+
+        if (
+            value === null ||
+            value === undefined ||
+            isNaN(value)
+        ) {
+
+            return "--";
+        }
+
+
+        return Number(value)
+            .toFixed(1);
+    }
+
+</script>

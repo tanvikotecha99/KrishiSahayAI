@@ -1,0 +1,241 @@
+﻿@model KrishiSahayAI.Models.LessonPageViewModel
+
+@{
+    ViewData["Title"] = Model.Topic.Title;
+
+    var farmId =
+        ViewData["FarmId"] is int id
+            ? id
+            : 0;
+
+    var completedLessonIds =
+        ViewData["CompletedLessonIds"] as List<int>
+        ?? new List<int>();
+
+    var topicCompleted =
+        ViewData["TopicCompleted"] is bool completed
+            ? completed
+            : false;
+}
+
+<link rel="stylesheet" href="~/css/krishisahay.css" />
+
+<div class="ks-lesson-page">
+
+    <!-- BACK -->
+    <a href="/Home/Teach?farmId=@farmId"
+       class="ks-back-link">
+        ← Back to Learn Farming
+    </a>
+
+
+    <!-- ===================================================== -->
+    <!-- LESSON HEADER -->
+    <!-- ===================================================== -->
+
+    <section class="ks-lesson-header">
+
+        <div class="ks-lesson-icon">
+            @Model.Topic.Icon
+        </div>
+
+        <span class="ks-small-label">
+            @Model.Topic.Category
+        </span>
+
+        <h1>
+            @Model.Topic.Title
+        </h1>
+
+        <p>
+            @Model.Topic.Description
+        </p>
+
+        @if (!string.IsNullOrWhiteSpace(
+            (string?)ViewData["Crop"]))
+        {
+            <div class="ks-learning-context">
+
+                🌾 Learning for:
+                <strong>
+                    @ViewData["Crop"]
+                </strong>
+
+            </div>
+        }
+
+        @if (topicCompleted)
+        {
+            <div class="ks-learning-context"
+                 style="margin-top:18px;">
+
+                ✅
+                <strong>
+                    Topic completed
+                </strong>
+
+            </div>
+        }
+
+    </section>
+
+
+    <!-- ===================================================== -->
+    <!-- LESSONS -->
+    <!-- ===================================================== -->
+
+    <section class="ks-lessons">
+
+        @foreach (var lesson in Model.Lessons)
+        {
+            var lessonCompleted =
+                completedLessonIds.Contains(
+                    lesson.Id);
+
+            <article class="ks-lesson-card">
+
+                <!-- LESSON NUMBER -->
+
+                <div class="ks-lesson-number">
+                    @lesson.Order.ToString("00")
+                </div>
+
+
+                <!-- LESSON CONTENT -->
+
+                <div class="ks-lesson-content">
+
+                    <h2>
+                        @lesson.Title
+                    </h2>
+
+                    <p class="ks-lesson-introduction">
+                        @lesson.Introduction
+                    </p>
+
+
+                    <div class="ks-lesson-body">
+
+                        <h3>
+                            What you should know
+                        </h3>
+
+                        <p>
+                            @lesson.Content
+                        </p>
+
+                    </div>
+
+
+                    <!-- KEY POINT -->
+
+                    <div class="ks-key-point">
+
+                        <span>
+                            💡
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Key point
+                            </strong>
+
+                            <p>
+                                @lesson.KeyPoint
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- LESSON COMPLETION -->
+                    <!-- ================================================= -->
+
+                    @if (farmId > 0)
+                    {
+                        <div style="margin-top:24px;">
+
+                            @if (lessonCompleted)
+                            {
+                                <div class="ks-learning-context">
+
+                                    ✅
+                                    <strong>
+                                        Lesson completed
+                                    </strong>
+
+                                </div>
+                            }
+                            else
+                            {
+                                <form asp-controller="Home"
+                                      asp-action="CompleteLesson"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="farmId"
+                                           value="@farmId" />
+
+                                    <input type="hidden"
+                                           name="topicId"
+                                           value="@Model.Topic.Id" />
+
+                                    <input type="hidden"
+                                           name="lessonId"
+                                           value="@lesson.Id" />
+
+                                    <button type="submit"
+                                            class="ks-btn ks-btn-primary">
+
+                                        Complete Lesson ✓
+
+                                    </button>
+
+                                </form>
+                            }
+
+                        </div>
+                    }
+
+                </div>
+
+            </article>
+        }
+
+    </section>
+
+
+    <!-- ===================================================== -->
+    <!-- BOTTOM NAVIGATION -->
+    <!-- ===================================================== -->
+
+    <div class="ks-lesson-bottom">
+
+        <a href="/Home/Teach?farmId=@farmId"
+           class="ks-btn ks-btn-secondary">
+
+            ← All Topics
+
+        </a>
+
+
+        @if (farmId > 0)
+        {
+            <a asp-controller="Home"
+               asp-action="Dashboard"
+               asp-route-id="@farmId"
+               class="ks-btn ks-btn-primary">
+
+                Back to My Farm →
+
+            </a>
+        }
+
+    </div>
+
+</div>

@@ -1,0 +1,616 @@
+﻿@model KrishiSahayAI.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "My Farm Dashboard";
+
+    var dashboardWeather =
+        ViewBag.Weather as KrishiSahayAI.Models.WeatherData;
+}
+
+<link rel="stylesheet" href="~/css/krishisahay.css" />
+
+<div class="ks-dashboard-page">
+
+    <!-- HEADER -->
+
+    <section class="ks-dashboard-header">
+
+        <div>
+
+            <span class="ks-small-label">
+                MY FARM
+            </span>
+
+            <h1>
+                Welcome, @Model.Farm.FarmerName 🌱
+            </h1>
+
+            <p>
+                Here's what's happening with your farm journey.
+            </p>
+
+        </div>
+
+        <a href="/Home/Onboarding"
+           class="ks-btn ks-btn-secondary">
+
+            Edit Farm Profile
+
+        </a>
+
+    </section>
+
+
+    <!-- FARM INFO -->
+
+    <section class="ks-dashboard-farm-card">
+
+        <div class="ks-dashboard-farm-title">
+
+            <div class="ks-dashboard-farm-icon">
+                🌾
+            </div>
+
+            <div>
+
+                <span>YOUR FARM</span>
+
+                <h2>
+                    @Model.Farm.FarmerName's Farm
+                </h2>
+
+                <p>
+                    📍 @Model.Farm.Location
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="ks-dashboard-details">
+
+            <div>
+
+                <small>Growing Space</small>
+
+                <strong>
+                    @Model.Farm.LandSize @Model.Farm.LandUnit
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <small>Soil</small>
+
+                <strong>
+                    @Model.Farm.SoilType
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <small>Water</small>
+
+                <strong>
+                    @Model.Farm.WaterSource
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <small>Method</small>
+
+                <strong>
+                    @Model.Farm.FarmingMethod
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         LIVE WEATHER
+         ========================================================= -->
+
+    @if (dashboardWeather != null)
+    {
+        <section class="ks-card ks-dashboard-weather">
+
+            <div class="ks-dashboard-weather-header">
+
+                <div>
+
+                    <span class="ks-small-label">
+                        LIVE FARM WEATHER
+                    </span>
+
+                    <h2>
+                        @dashboardWeather.LocationName
+                    </h2>
+
+                    <p>
+                        Current conditions for your farm
+                    </p>
+
+                </div>
+
+                <div class="ks-dashboard-weather-icon">
+                    @GetWeatherIcon(dashboardWeather.WeatherCode)
+                </div>
+
+            </div>
+
+
+            <div class="ks-dashboard-weather-main">
+
+                <div class="ks-dashboard-temperature">
+                    @dashboardWeather.TemperatureC.ToString("0.#")°C
+                </div>
+
+                <div class="ks-dashboard-weather-description">
+                    @dashboardWeather.WeatherDescription
+                </div>
+
+            </div>
+
+
+            <div class="ks-dashboard-weather-stats">
+
+                <div>
+
+                    <span>Humidity</span>
+
+                    <strong>
+                        @dashboardWeather.HumidityPercent.ToString("0")%
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>Wind</span>
+
+                    <strong>
+                        @dashboardWeather.WindSpeedKmh.ToString("0.#") km/h
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>Rainfall</span>
+
+                    <strong>
+                        @dashboardWeather.PrecipitationMm.ToString("0.#") mm
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="ks-dashboard-weather-footer">
+
+                <span>
+                    7-day forecast available
+                </span>
+
+                <a href="/Weather/Index?farmId=@Model.Farm.Id"
+                   class="ks-btn ks-btn-primary">
+
+                    View Forecast →
+
+                </a>
+
+            </div>
+
+        </section>
+    }
+
+
+    <!-- =========================================================
+         YOUR CROPS
+         ========================================================= -->
+
+  <section class="ks-card ks-dashboard-crops-card">
+
+    <div class="ks-dashboard-crops-header">
+
+        <div>
+
+            <span class="ks-small-label">
+                YOUR CROPS
+            </span>
+
+         <h2>
+    Manage crops on this farm 🌾
+</h2>
+
+            <p class="ks-dashboard-crops-description">
+    Add and manage multiple crops belonging to this farm.
+</p>
+
+        </div>
+
+            <a href="/Home/MyCrops?farmId=@Model.Farm.Id"
+               class="ks-btn ks-btn-primary">
+
+                View My Crops →
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- AI ASSISTANT -->
+
+    <section class="ks-ai-dashboard-card">
+
+        <div class="ks-ai-dashboard-content">
+
+            <span class="ks-small-label">
+                KRISHISAHAY AI
+            </span>
+
+            <h2>
+                Have a question about your farm? 🤖
+            </h2>
+
+            <p>
+                Ask KrishiSahay AI about your
+                <strong>@Model.Farm.Crop</strong>,
+                soil, watering, crop growth, pests,
+                weather or other farming questions.
+            </p>
+
+            <a href="/Home/AskAI?farmId=@Model.Farm.Id"
+               class="ks-btn ks-btn-primary">
+
+                Ask KrishiSahay AI →
+
+            </a>
+
+        </div>
+
+        <div class="ks-ai-dashboard-icon">
+            🤖
+        </div>
+
+    </section>
+
+
+    <!-- AI CROP DOCTOR -->
+
+    <section class="ks-ai-dashboard-card ks-crop-doctor-dashboard-card">
+
+        <div class="ks-ai-dashboard-content">
+
+            <span class="ks-small-label">
+                AI CROP DOCTOR
+            </span>
+
+            <h2>
+                Check your crop with a photo 📷
+            </h2>
+
+            <p>
+                Upload a photo of your
+                <strong>@Model.Farm.Crop</strong>
+                to let AI examine visible crop symptoms,
+                pests or unusual changes.
+            </p>
+
+            <a href="/Home/CropDoctor?farmId=@Model.Farm.Id"
+               class="ks-btn ks-btn-primary">
+
+                Open AI Crop Doctor →
+
+            </a>
+
+        </div>
+
+        <div class="ks-ai-dashboard-icon">
+            🌿
+        </div>
+
+    </section>
+
+
+    <!-- SOIL ASSESSMENT -->
+
+    <section class="ks-card" style="margin-top:25px;">
+
+        <div style="display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    gap:15px;
+                    flex-wrap:wrap;">
+
+            <div>
+
+                <span class="ks-small-label">
+                    SOIL HEALTH
+                </span>
+
+                <h2 style="margin-top:8px;">
+                    Soil Assessment 🌱
+                </h2>
+
+                <p style="margin-bottom:0;">
+                    Review your soil observations and assessment results.
+                </p>
+
+            </div>
+
+            <a href="/Home/SoilResult?farmId=@Model.Farm.Id"
+               class="ks-btn ks-btn-primary">
+
+                View Soil Assessment →
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- PROGRESS -->
+<!-- =========================================================
+     FARM JOURNEY PROGRESS
+     ========================================================= -->
+
+<section class="ks-progress-card">
+
+    <div class="ks-progress-heading">
+
+        <div>
+
+            <span class="ks-small-label">
+                FARM JOURNEY
+            </span>
+
+            <h2>
+                Your progress
+            </h2>
+
+        </div>
+
+        <strong>
+            @Model.ProgressPercentage%
+        </strong>
+
+    </div>
+
+
+    <div class="ks-progress-bar">
+
+        <div style="width:@Model.ProgressPercentage%">
+        </div>
+
+    </div>
+
+
+    <p>
+        @Model.CompletedActivities of
+        @Model.TotalActivities
+        core farming milestones completed
+    </p>
+
+</section>
+
+
+<!-- =========================================================
+     FARM JOURNEY MILESTONES
+     ========================================================= -->
+
+<section class="ks-next-section">
+
+    <div class="ks-dashboard-section-title">
+
+        <div>
+
+            <span class="ks-small-label">
+                YOUR JOURNEY
+            </span>
+
+            <h2>
+                Farm milestones
+            </h2>
+
+            <p style="margin-top:6px;">
+                Follow the key steps from crop selection to harvest.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="ks-activity-list">
+
+    @foreach (var activity in Model.Activities)
+    {
+        var activityIcon =
+            activity.Category switch
+            {
+                "Crop" => "🌾",
+                "Preparation" => "🚜",
+                "Planting" => "🌱",
+                "Monitoring" => "🌿",
+                "Harvest" => "🌾",
+                _ => "🌱"
+            };
+
+      var activityUrl =
+    activity.Category switch
+    {
+        "Crop" =>
+            $"/Home/Teach?farmId={Model.Farm.Id}",
+
+        "Preparation" =>
+            $"/Home/PrepareFarm?farmId={Model.Farm.Id}",
+
+        "Planting" =>
+            $"/Home/MyCrops?farmId={Model.Farm.Id}",
+
+        "Monitoring" =>
+            $"/Home/MyCrops?farmId={Model.Farm.Id}",
+
+       "Harvest" =>
+    $"/Home/HarvestReadiness?farmId={Model.Farm.Id}",
+
+        _ =>
+            $"/Home/Dashboard/{Model.Farm.Id}"
+    };
+
+
+        <a href="@activityUrl"
+           class="ks-activity-card"
+           style="text-decoration:none; color:inherit;">
+
+            <!-- ICON -->
+
+            <div class="ks-activity-icon">
+
+                @activityIcon
+
+            </div>
+
+
+            <!-- CONTENT -->
+
+            <div class="ks-activity-content">
+
+                <div class="ks-activity-top">
+
+                    <h3 style="
+                        @(activity.IsCompleted
+                            ? "text-decoration:line-through; opacity:.65;"
+                            : "")
+                    ">
+
+                        @if (activity.IsCompleted)
+                        {
+                            <span style="
+                                text-decoration:none;
+                                margin-right:6px;
+                            ">
+                                ✓
+                            </span>
+                        }
+
+                        @activity.Title
+
+                    </h3>
+
+
+                    <span>
+
+                        @if (activity.IsCompleted)
+                        {
+                            <strong style="color:#2e7d32;">
+                                Completed
+                            </strong>
+                        }
+                        else
+                        {
+                            @activity.ActivityDate.ToString("dd MMM")
+                        }
+
+                    </span>
+
+                </div>
+
+
+                <p>
+                    @activity.Description
+                </p>
+
+
+                @if (activity.IsCompleted)
+                {
+                    <div style="
+                        margin-top:8px;
+                        font-size:14px;
+                        font-weight:600;
+                        color:#2e7d32;
+                    ">
+                        ✓ Milestone completed
+                    </div>
+                }
+                else
+                {
+                    <div style="
+                        margin-top:10px;
+                        font-size:14px;
+                        font-weight:600;
+                        color:#2e7d32;
+                    ">
+                        Open milestone →
+                    </div>
+                }
+
+            </div>
+
+
+            <!-- RIGHT ARROW -->
+
+            <div class="ks-activity-arrow">
+
+                @if (activity.IsCompleted)
+                {
+                    <span style="color:#2e7d32;">
+                        ✓
+                    </span>
+                }
+                else
+                {
+                    <span>
+                        →
+                    </span>
+                }
+
+            </div>
+
+        </a>
+    }
+
+</div>
+
+</section>
+@functions
+{
+    string GetWeatherIcon(int code)
+    {
+        return code switch
+        {
+            0 => "☀️",
+            1 or 2 => "🌤️",
+            3 => "☁️",
+            45 or 48 => "🌫️",
+            51 or 53 or 55 => "🌦️",
+            56 or 57 => "🌧️",
+            61 or 63 or 65 => "🌧️",
+            66 or 67 => "🌧️",
+            71 or 73 or 75 or 77 => "❄️",
+            80 or 81 or 82 => "🌦️",
+            85 or 86 => "🌨️",
+            95 or 96 or 99 => "⛈️",
+            _ => "🌤️"
+        };
+    }
+}

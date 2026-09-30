@@ -1,0 +1,262 @@
+﻿@model KrishiSahayAI.Models.FarmProfile
+
+@{
+    ViewData["Title"] = "Your Farm Journey";
+}
+
+<link rel="stylesheet" href="~/css/krishisahay.css" />
+
+<div class="ks-farm-created">
+
+    <div class="ks-success-icon">
+        🌱
+    </div>
+
+    <div class="ks-badge">
+        FARM PROFILE CREATED
+    </div>
+
+    <h1>
+        Welcome, @Model.FarmerName!
+    </h1>
+
+    <p class="ks-created-intro">
+        Your KrishiSahay farm journey has been created.
+        Now you can add one or more crops to this farm.
+    </p>
+
+
+    <!-- FARM SUMMARY -->
+
+    <section class="ks-farm-summary">
+
+        <div class="ks-summary-card">
+            <span>📍</span>
+            <div>
+                <small>Location</small>
+                <strong>@Model.Location</strong>
+            </div>
+        </div>
+
+
+        <div class="ks-summary-card">
+            <span>🌾</span>
+            <div>
+                <small>Crops</small>
+                <strong>
+                    Add your crops next
+                </strong>
+            </div>
+        </div>
+
+
+        <div class="ks-summary-card">
+            <span>📐</span>
+            <div>
+                <small>Growing Space</small>
+                <strong>
+                    @Model.LandSize @Model.LandUnit
+                </strong>
+            </div>
+        </div>
+
+
+        <div class="ks-summary-card">
+            <span>💧</span>
+            <div>
+                <small>Water Source</small>
+                <strong>@Model.WaterSource</strong>
+            </div>
+        </div>
+
+
+        <div class="ks-summary-card">
+            <span>🌱</span>
+            <div>
+                <small>Soil</small>
+                <strong>@Model.SoilType</strong>
+            </div>
+        </div>
+
+
+        <div class="ks-summary-card">
+            <span>🚜</span>
+            <div>
+                <small>Farming Method</small>
+                <strong>@Model.FarmingMethod</strong>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- ADD CROPS -->
+
+    <section class="ks-journey-card">
+
+        <div class="ks-journey-heading">
+
+            <div>
+                <span class="ks-small-label">
+                    NEXT STEP
+                </span>
+
+                <h2>
+                    Add crops to your farm
+                </h2>
+
+                <p>
+                    A single farm can have multiple crops.
+                    Add the crops you are growing on this land,
+                    including their variety, season, area and sowing date.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="ks-progress-list">
+
+            <div class="ks-progress-item active">
+
+                <div class="ks-progress-number">
+                    ✓
+                </div>
+
+                <div>
+                    <strong>
+                        Create your farm profile
+                    </strong>
+
+                    <p>
+                        Your farm information has been saved.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="ks-progress-item active">
+
+                <div class="ks-progress-number">
+                    2
+                </div>
+
+                <div>
+                    <strong>
+                        Add your crops
+                    </strong>
+
+                    <p>
+                        Add one or more crops growing on this farm.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="ks-progress-item">
+
+                <div class="ks-progress-number">
+                    3
+                </div>
+
+                <div>
+                    <strong>
+                        Understand your soil
+                    </strong>
+
+                    <p>
+                        Learn how your soil conditions can support your crops.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="ks-progress-item">
+
+                <div class="ks-progress-number">
+                    4
+                </div>
+
+                <div>
+                    <strong>
+                        Prepare & plant
+                    </strong>
+
+                    <p>
+                        Get your growing area ready for the selected crops.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="ks-progress-item">
+
+                <div class="ks-progress-number">
+                    5
+                </div>
+
+                <div>
+                    <strong>
+                        Monitor your crops
+                    </strong>
+
+                    <p>
+                        Use weather information, AI Crop Doctor
+                        and crop observations.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="ks-progress-item">
+
+                <div class="ks-progress-number">
+                    6
+                </div>
+
+                <div>
+                    <strong>
+                        Harvest
+                    </strong>
+
+                    <p>
+                        Learn how to identify harvest readiness
+                        for each crop.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="ks-journey-actions">
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="ks-btn ks-btn-secondary">
+
+                ← Dashboard
+
+            </a>
+
+
+            <a asp-controller="Home"
+               asp-action="AddCrop"
+               asp-route-farmId="@Model.Id"
+               class="ks-btn ks-btn-primary">
+
+                🌾 Add Your First Crop →
+
+            </a>
+
+        </div>
+
+    </section>
+
+</div>

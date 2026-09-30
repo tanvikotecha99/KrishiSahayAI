@@ -1,0 +1,261 @@
+﻿@model IEnumerable<KrishiSahayAI.Models.FarmProfile>
+
+@{
+    ViewData["Title"] = "Select Your Farm";
+}
+
+<style>
+    .weather-selection-page {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px 60px;
+    }
+
+    .weather-selection-header {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .weather-selection-header h1 {
+        font-size: 34px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #1f2937;
+    }
+
+    .weather-selection-header p {
+        font-size: 16px;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .farm-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 22px;
+    }
+
+    .farm-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        min-height: 250px;
+    }
+
+    .farm-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.09);
+        border-color: #d1d5db;
+    }
+
+    .farm-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background: #eef7ed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        margin-bottom: 18px;
+    }
+
+    .farm-card h3 {
+        font-size: 21px;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 10px;
+    }
+
+    .farm-location {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+
+    .farm-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+
+    .farm-detail {
+        background: #f3f4f6;
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 13px;
+        color: #4b5563;
+    }
+
+    .weather-btn {
+        margin-top: auto;
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 18px;
+        border-radius: 10px;
+        background: #2f7d32;
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 600;
+        transition: background 0.2s ease;
+    }
+
+    .weather-btn:hover {
+        background: #256628;
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    .local-weather-box {
+        margin-top: 28px;
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .local-weather-box p {
+        margin: 0 0 12px;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .local-weather-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #2f7d32;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .local-weather-link:hover {
+        text-decoration: underline;
+    }
+
+    @@media (max-width: 600px) {
+        .weather-selection-page {
+            margin: 25px auto;
+            padding: 0 15px 40px;
+        }
+
+        .weather-selection-header h1 {
+            font-size: 28px;
+        }
+
+        .weather-selection-header p {
+            font-size: 14px;
+        }
+
+        .farm-card {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="weather-selection-page">
+
+    <div class="weather-selection-header">
+
+        <h1>
+            Select Your Farm
+        </h1>
+
+        <p>
+            Choose the farm you want to view live weather conditions for.
+        </p>
+
+    </div>
+
+
+    <div class="farm-grid">
+
+        @foreach (var farm in Model)
+        {
+            <div class="farm-card">
+
+                <div class="farm-icon">
+                    🌾
+                </div>
+
+                <h3>
+                    @(string.IsNullOrWhiteSpace(farm.FarmerName)
+                        ? "My Farm"
+                        : farm.FarmerName + "'s Farm")
+                </h3>
+
+                <div class="farm-location">
+                    <span>📍</span>
+
+                    <span>
+                        @(string.IsNullOrWhiteSpace(farm.Location)
+                            ? "Location not available"
+                            : farm.Location)
+                    </span>
+                </div>
+
+                <div class="farm-details">
+
+                    @if (farm.LandSize > 0)
+                    {
+                        <span class="farm-detail">
+                            🌱 @farm.LandSize @farm.LandUnit
+                        </span>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(farm.Crop))
+                    {
+                        <span class="farm-detail">
+                            🌾 @farm.Crop
+                        </span>
+                    }
+
+                </div>
+
+                <a asp-controller="Weather"
+                   asp-action="Index"
+                   asp-route-farmId="@farm.Id"
+                   class="weather-btn">
+
+                    <span>☁️</span>
+                    View Farm Weather
+
+                </a>
+
+            </div>
+        }
+
+    </div>
+
+
+    <div class="local-weather-box">
+
+        <p>
+            Want to check the weather where you are right now?
+        </p>
+
+        <a asp-controller="Weather"
+           asp-action="LocalWeather"
+           class="local-weather-link">
+
+            📍 Use My Current Location
+
+        </a>
+
+    </div>
+
+</div>
