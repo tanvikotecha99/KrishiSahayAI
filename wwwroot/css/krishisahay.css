@@ -7525,3 +7525,390 @@ main[role="main"] + footer {
             min-height: 52px;
         }
 }
+
+/* =========================================================
+   MOBILE HEADER REDESIGN
+   ========================================================= */
+
+.ks-mobile-menu-toggle {
+    display: none;
+}
+
+/* Mobile only */
+@media (max-width: 700px) {
+
+    .ks-mobile-menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 48px;
+        height: 48px;
+
+        border: none;
+        border-radius: 50%;
+
+        background: #e4f2df;
+        color: #174d2d;
+
+        font-size: 25px;
+        cursor: pointer;
+
+        flex-shrink: 0;
+    }
+
+    .ks-mobile-menu-toggle:hover {
+        background: #d5ebcf;
+    }
+
+    /*
+       Mobile navigation container
+    */
+
+    body.ks-mobile-menu-open nav {
+        display: flex !important;
+
+        position: absolute;
+        top: 78px;
+        right: 18px;
+        left: 18px;
+
+        z-index: 9999;
+
+        flex-direction: column;
+        align-items: stretch;
+
+        padding: 8px;
+
+        background: #ffffff;
+
+        border-radius: 18px;
+
+        box-shadow:
+            0 18px 45px rgba(20, 70, 35, 0.16);
+
+        border: 1px solid #e1eee0;
+    }
+
+    body.ks-mobile-menu-open nav a {
+        display: flex;
+        align-items: center;
+
+        min-height: 48px;
+
+        padding: 10px 14px;
+
+        border-bottom: 1px solid #edf3ed;
+
+        color: #173b2b;
+
+        text-decoration: none;
+
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    body.ks-mobile-menu-open nav a:last-child {
+        border-bottom: none;
+    }
+
+    body.ks-mobile-menu-open nav a:hover {
+        background: #f1f8ef;
+        border-radius: 10px;
+    }
+}
+
+
+/* =========================================================
+   FOOTER BRANDING
+   ========================================================= */
+
+.ks-footer-brand {
+    color: #174d2d;
+    font-weight: 600;
+}
+
+.ks-footer-brand strong {
+    color: #2f7d32;
+}
+
+/* =========================================================
+   MOBILE HEADER REDESIGN
+   ========================================================= */
+
+.ks-mobile-menu-toggle {
+    display: none;
+}
+
+/* Mobile only */
+@media (max-width: 700px) {
+
+    .ks-mobile-menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border: none;
+        border-radius: 50%;
+        background: #e4f2df;
+        color: #174d2d;
+        font-size: 25px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+        .ks-mobile-menu-toggle:hover {
+            background: #d5ebcf;
+        }
+
+    /*
+       Mobile navigation container
+    */
+
+    body.ks-mobile-menu-open nav {
+        display: flex !important;
+        position: absolute;
+        top: 78px;
+        right: 18px;
+        left: 18px;
+        z-index: 9999;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 8px;
+        background: #ffffff;
+        border-radius: 18px;
+        box-shadow: 0 18px 45px rgba(20, 70, 35, 0.16);
+        border: 1px solid #e1eee0;
+    }
+
+        body.ks-mobile-menu-open nav a {
+            display: flex;
+            align-items: center;
+            min-height: 48px;
+            padding: 10px 14px;
+            border-bottom: 1px solid #edf3ed;
+            color: #173b2b;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+            body.ks-mobile-menu-open nav a:last-child {
+                border-bottom: none;
+            }
+
+            body.ks-mobile-menu-open nav a:hover {
+                background: #f1f8ef;
+                border-radius: 10px;
+            }
+}
+
+
+/* =========================================================
+   FOOTER BRANDING
+   ========================================================= */
+
+.ks-footer-brand {
+    color: #174d2d;
+    font-weight: 600;
+}
+
+    .ks-footer-brand strong {
+        color: #2f7d32;
+    }
+
+/* =========================================================
+   KRISHISAHAY MOBILE HEADER
+   ========================================================= */
+
+.ks-mobile-menu-toggle {
+    display: none;
+}
+
+
+/* =========================================================
+   FOOTER BRAND
+   ========================================================= */
+
+.ks-footer-brand {
+    color: #174d2d;
+    font-weight: 700;
+}
+
+    .ks-footer-brand:hover {
+        color: #2f7d32;
+    }
+
+
+/* =========================================================
+   MOBILE HEADER
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    /* Header */
+
+    .ks-navbar {
+        position: relative;
+        z-index: 9999;
+        background: #ffffff;
+    }
+
+
+    /* Header inner */
+
+    .ks-navbar-inner {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 18px;
+        min-height: 72px;
+    }
+
+
+    /* Brand */
+
+    .ks-brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+
+    .ks-brand-icon {
+        font-size: 28px;
+        line-height: 1;
+    }
+
+
+    .ks-brand-text {
+        font-size: 21px;
+        font-weight: 700;
+        color: #174d2d;
+    }
+
+
+    /* =====================================================
+       HAMBURGER BUTTON
+       ===================================================== */
+
+    .ks-mobile-menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        border: none;
+        border-radius: 50%;
+        background: #e4f2df;
+        color: #174d2d;
+        font-size: 24px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+
+        .ks-mobile-menu-toggle:hover {
+            background: #d6ebd0;
+        }
+
+
+        .ks-mobile-menu-toggle:active {
+            transform: scale(0.95);
+        }
+
+
+    /* =====================================================
+       HIDE NAVIGATION BY DEFAULT ON MOBILE
+       ===================================================== */
+
+    .ks-nav {
+        display: none;
+    }
+
+
+    /* =====================================================
+       OPEN MOBILE MENU
+       ===================================================== */
+
+    body.ks-mobile-menu-open .ks-nav {
+        display: flex;
+        position: absolute;
+        top: 68px;
+        left: 16px;
+        right: 16px;
+        z-index: 10000;
+        flex-direction: column;
+        gap: 4px;
+        padding: 10px;
+        background: #ffffff;
+        border: 1px solid #e1eee0;
+        border-radius: 20px;
+        box-shadow: 0 18px 45px rgba(20, 70, 35, 0.16);
+    }
+
+
+        /* =====================================================
+       MOBILE MENU LINKS
+       ===================================================== */
+
+        body.ks-mobile-menu-open .ks-nav > a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            min-height: 48px;
+            padding: 11px 14px;
+            border-radius: 12px;
+            color: #173b2b;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+
+            body.ks-mobile-menu-open .ks-nav > a:hover {
+                background: #eef8e9;
+                color: #174d2d;
+            }
+
+
+            /* Icons */
+
+            body.ks-mobile-menu-open .ks-nav > a:first-child {
+                margin-top: 2px;
+            }
+
+
+        /* =====================================================
+       LOGIN / REGISTER LINKS
+       ===================================================== */
+
+        body.ks-mobile-menu-open .ks-nav form,
+        body.ks-mobile-menu-open .ks-nav .nav-link {
+            width: 100%;
+        }
+
+
+            body.ks-mobile-menu-open .ks-nav form button,
+            body.ks-mobile-menu-open .ks-nav a {
+                font-family: inherit;
+            }
+
+
+    /* =====================================================
+       MOBILE FOOTER
+       ===================================================== */
+
+    footer.footer {
+        padding: 28px 18px;
+        text-align: center;
+        font-size: 14px;
+    }
+}

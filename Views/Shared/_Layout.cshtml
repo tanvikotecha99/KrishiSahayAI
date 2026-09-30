@@ -14,9 +14,10 @@
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
-          <link rel="stylesheet"
-      href="~/css/krishisahay.css"
-      asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/krishisahay.css"
+          asp-append-version="true" />
 
 </head>
 
@@ -56,7 +57,7 @@
                 <a asp-controller="Home"
                    asp-action="Index">
 
-                    Home
+                    🏠 <span>Home</span>
 
                 </a>
 
@@ -66,7 +67,7 @@
                 <a asp-controller="Home"
                    asp-action="MyFarms">
 
-                    My Farms
+                    🌱 <span>My Farms</span>
 
                 </a>
 
@@ -76,47 +77,60 @@
                 <a asp-controller="Home"
                    asp-action="Teach">
 
-                    Learn Farming
+                    📖 <span>Learn Farming</span>
 
                 </a>
 
 
                 <!-- AI CROP DOCTOR -->
-<a asp-controller="Home"
-   asp-action="PublicCropDoctor"
-   title="Upload a crop photo and check your crop with AI">
 
-    🔍 AI Crop Doctor
+                <a asp-controller="Home"
+                   asp-action="PublicCropDoctor"
+                   title="Upload a crop photo and check your crop with AI">
 
-</a>
+                    🔍 <span>AI Crop Doctor</span>
+
+                </a>
+
 
                 <!-- ASK AI -->
 
                 <a asp-controller="Home"
                    asp-action="AskAI">
 
-                    Ask AI
+                    ✨ <span>Ask AI</span>
 
                 </a>
 
 
                 <!-- WEATHER -->
 
-           <!-- WEATHER -->
+                <a asp-controller="Weather"
+                   asp-action="Select">
 
-<a asp-controller="Weather"
-   asp-action="Select">
+                    ☁️ <span>Weather</span>
 
-    Weather
-
-</a>
+                </a>
 
 
-<!-- LOGIN / REGISTER -->
+                <!-- LOGIN / REGISTER -->
 
                 <partial name="_LoginPartial" />
 
             </nav>
+
+
+            <!-- MOBILE MENU BUTTON -->
+
+            <button type="button"
+                    class="ks-mobile-menu-toggle"
+                    aria-label="Open menu"
+                    aria-expanded="false"
+                    onclick="toggleKrishiSahayMenu(this)">
+
+                ☰
+
+            </button>
 
         </div>
 
@@ -142,7 +156,11 @@
 
         <div class="container">
 
-            &copy; @DateTime.Now.Year - KrishiSahay
+            © 2026 -
+            <span class="ks-footer-brand">
+                Tanvi Infotech
+            </span>
+            | KrishiSahay
 
         </div>
 
@@ -157,6 +175,70 @@
 
     <script src="~/js/site.js"
             asp-append-version="true"></script>
+
+
+    <!-- MOBILE MENU -->
+
+    <script>
+
+        function toggleKrishiSahayMenu(button) {
+
+            document.body.classList.toggle(
+                "ks-mobile-menu-open"
+            );
+
+            const isOpen =
+                document.body.classList.contains(
+                    "ks-mobile-menu-open"
+                );
+
+            button.setAttribute(
+                "aria-expanded",
+                isOpen ? "true" : "false"
+            );
+
+            button.innerHTML =
+                isOpen ? "✕" : "☰";
+        }
+
+
+        /* Close menu after clicking a link */
+
+        document.addEventListener(
+            "click",
+            function (event) {
+
+                const link =
+                    event.target.closest(
+                        ".ks-nav a"
+                    );
+
+                if (!link) return;
+
+                document.body.classList.remove(
+                    "ks-mobile-menu-open"
+                );
+
+                const button =
+                    document.querySelector(
+                        ".ks-mobile-menu-toggle"
+                    );
+
+                if (button) {
+
+                    button.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+                    button.innerHTML = "☰";
+                }
+
+            }
+        );
+
+    </script>
+
 
     @await RenderSectionAsync(
         "Scripts",
