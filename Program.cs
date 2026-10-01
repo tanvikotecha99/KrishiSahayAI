@@ -1,6 +1,7 @@
 using KrishiSahayAI.Data;
 using KrishiSahayAI.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using KrishiSahay.Data;
 
@@ -60,6 +61,22 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlite("Data Source=Data/krishisahay.db");
     }
 });
+
+// ------------------------------------------------------------
+// ASP.NET Core Data Protection
+// ------------------------------------------------------------
+// Stores authentication encryption keys in the database.
+//
+// This is important for Cloud Run because the container filesystem
+// is not a permanent storage location.
+//
+// It allows authentication cookies to remain valid when Cloud Run
+// restarts or creates a new container instance.
+// ------------------------------------------------------------
+
+builder.Services
+    .AddDataProtection()
+    .PersistKeysToDbContext<ApplicationDbContext>();
 
 // ------------------------------------------------------------
 // ASP.NET Core Identity
@@ -142,6 +159,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(

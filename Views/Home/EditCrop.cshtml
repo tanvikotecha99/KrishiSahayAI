@@ -18,7 +18,7 @@
             ?? "Acre");
 }
 
-<div class="ks-page">
+<div class="ks-page edit-crop-page">
 
     <div class="ks-container">
 
@@ -512,4 +512,97 @@
         })();
 
     </script>
+    <style>
+        /* Edit Crop page styling */
+        .edit-crop-page input[type="text"],
+        .edit-crop-page input[type="number"],
+        .edit-crop-page input[type="date"],
+        .edit-crop-page select,
+        .edit-crop-page textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d6e4d8;
+            border-radius: 10px;
+            background: #fff;
+            color: #173b24;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+            .edit-crop-page input:focus,
+            .edit-crop-page select:focus,
+            .edit-crop-page textarea:focus {
+                border-color: #2f7d32;
+                box-shadow: 0 0 0 3px rgba(47, 125, 50, 0.12);
+            }
+
+        .edit-crop-page textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .edit-crop-page label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: 600;
+            color: #234b2c;
+        }
+
+        .edit-crop-page .form-group {
+            margin-bottom: 20px;
+        }
+
+        .edit-crop-page button,
+        .edit-crop-page input[type="submit"] {
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+            .edit-crop-page button:hover,
+            .edit-crop-page input[type="submit"]:hover {
+                transform: translateY(-1px);
+            }
+
+        .edit-crop-page .btn-success {
+            background: #2f7d32;
+            color: white;
+        }
+
+            .edit-crop-page .btn-success:hover {
+                background: #256628;
+            }
+
+        .edit-crop-page .btn-secondary {
+            background: white;
+            color: #2f7d32;
+            border: 1px solid #2f7d32;
+        }
+
+            .edit-crop-page .btn-secondary:hover {
+                background: #f1f8f2;
+            }
+
+        .edit-crop-page .warning,
+        .edit-crop-page .alert {
+            border-radius: 10px;
+        }
+
+        @@media (max-width: 768px) {
+            .edit-crop-page {
+                padding: 15px;
+            }
+
+                .edit-crop-page input,
+                .edit-crop-page select,
+                .edit-crop-page textarea {
+                    font-size: 16px;
+                }
+        }
+    </style>
 }
