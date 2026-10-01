@@ -3820,6 +3820,13 @@ namespace KrishiSahayAI.Controllers
                     model.Observation?.Trim() ?? "",
                     model.Analysis);
 
+                // Reload Crop Doctor history so the newly saved
+                // and previous analyses appear immediately.
+                model.PreviousObservations =
+                    _db.GetCropObservations(
+                        farm.Id,
+                        selectedCrop.CropName);
+
 
                 // =====================================================
                 // COMPLETE CROP MONITORING MILESTONE
