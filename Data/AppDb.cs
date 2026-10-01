@@ -362,9 +362,7 @@ VALUES
     @ExperienceLevel,
     @Budget,
     @CreatedAt
-);
-
-RETURNING Id;
+) RETURNING Id;
 ";
 
             AddParameter(command,
@@ -454,9 +452,7 @@ VALUES
     @SowingDate,
     @Notes,
     @CreatedAt
-);
-
-RETURNING Id;
+) RETURNING Id;
 ";
 
             AddParameter(command,
@@ -1410,9 +1406,7 @@ VALUES
     @Observation,
     @AiResult,
     @CreatedAt
-);
-
-RETURNING Id;
+) RETURNING Id;
 ";
 
             AddParameter(command,
@@ -1551,9 +1545,7 @@ VALUES
     @SoilTestStatus,
     @Result,
     @CreatedAt
-);
-
-RETURNING Id;
+) RETURNING Id;
 ";
 
             AddParameter(command,
@@ -1707,9 +1699,7 @@ VALUES
     @RecentWaterProblem,
     @Result,
     @CreatedAt
-);
-
-RETURNING Id;
+) RETURNING Id;
 ";
 
             AddParameter(command,
