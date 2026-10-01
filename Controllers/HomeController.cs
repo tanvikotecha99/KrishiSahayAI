@@ -393,222 +393,214 @@ namespace KrishiSahayAI.Controllers
 
                 if (!string.IsNullOrEmpty(userId))
                 {
+                    // Explicitly requested a new farm.
+                    // Do not run any existing-farm routing or TempData logic.
                     if (forceNew)
                     {
                         return View(
                             new FarmOnboardingViewModel());
                     }
+
                     // -------------------------------------------------
-                    // IMPORTANT:
-                    // If the user filled the farm form while logged out,
-                    // the form is stored in TempData before Login/Register.
+                    // Restore a farm that was completed anonymously
+                    // before login/register.
                     //
-                    // After successful Login/Register, Identity returns
-                    // the user to /Home/Onboarding. At this point we must
-                    // SAVE that pending farm to the newly authenticated
-                    // user's account before checking their existing farms.
+                    // TempData is protected by ASP.NET Core Data Protection.
+                    // If an old/corrupt TempData cookie exists, do not let it
+                    // break the Create Your Farm page. We simply continue with
+                    // the normal farm routing.
                     // -------------------------------------------------
-                    if (TempData.TryGetValue(
-                            "PendingFarmOnboarding",
-                            out var pendingValue)
-                        && pendingValue is string pendingJson
-                        && !string.IsNullOrWhiteSpace(pendingJson))
+                    FarmOnboardingViewModel? pendingModel = null;
+
+                    try
+                    {
+                        if (TempData.TryGetValue(
+                                "PendingFarmOnboarding",
+                                out var pendingValue)
+                            && pendingValue is string pendingJson
+                            && !string.IsNullOrWhiteSpace(pendingJson))
+                        {
+                            pendingModel =
+                                JsonSerializer.Deserialize<FarmOnboardingViewModel>(
+                                    pendingJson);
+                        }
+                    }
+                    catch
+                    {
+                        // Ignore invalid/old TempData and continue normally.
+                        pendingModel = null;
+                    }
+
+                    if (pendingModel != null)
                     {
                         try
                         {
-                            var pendingModel =
-                                JsonSerializer.Deserialize<FarmOnboardingViewModel>(
-                                    pendingJson);
+                            // Save the farm under the authenticated user.
+                            var farm =
+                                new FarmProfile
+                                {
+                                    UserId = userId,
+                                    FarmerName = pendingModel.FarmerName,
+                                    Location = pendingModel.Location,
+                                    ExperienceLevel = pendingModel.ExperienceLevel,
+                                    LandSize = pendingModel.LandSize,
+                                    LandUnit = pendingModel.LandUnit,
+                                    SoilType = pendingModel.SoilType,
+                                    WaterSource = pendingModel.WaterSource,
+                                    FarmingMethod = pendingModel.FarmingMethod,
+                                    Budget = pendingModel.Budget,
+                                    CreatedAt = DateTime.UtcNow
+                                };
 
-                            if (pendingModel != null)
-                            {
-                                // Save the farm under the authenticated user.
-                                var farm =
-                                    new FarmProfile
-                                    {
-                                        UserId = userId,
-                                        FarmerName = pendingModel.FarmerName,
-                                        Location = pendingModel.Location,
-                                        ExperienceLevel = pendingModel.ExperienceLevel,
-                                        LandSize = pendingModel.LandSize,
-                                        LandUnit = pendingModel.LandUnit,
-                                        SoilType = pendingModel.SoilType,
-                                        WaterSource = pendingModel.WaterSource,
-                                        FarmingMethod = pendingModel.FarmingMethod,
-                                        Budget = pendingModel.Budget,
-                                        CreatedAt = DateTime.UtcNow
-                                    };
-                                var farmId =
-                                    _db.SaveFarm(farm);
+                            var farmId =
+                                _db.SaveFarm(farm);
 
+                            // -------------------------------------------------
+                            // Save soil assessment from onboarding.
+                            // -------------------------------------------------
+                            var soilAssessment =
+                                new SoilAssessment
+                                {
+                                    FarmProfileId = farmId,
+                                    SoilKnowledge = pendingModel.SoilKnowledge,
+                                    SoilTexture = pendingModel.SoilTexture,
+                                    SoilColour = pendingModel.SoilColour,
+                                    Drainage = pendingModel.Drainage,
+                                    PreviousCrop = pendingModel.PreviousCrop,
+                                    SoilTestStatus = pendingModel.SoilTestStatus,
+                                    CreatedAt = DateTime.UtcNow
+                                };
 
-                                // =========================================================
-                                // SAVE SOIL ASSESSMENT FROM ONBOARDING
-                                // =========================================================
+                            soilAssessment.Result =
+                                BuildSoilResult(soilAssessment);
 
-                                var soilAssessment =
-                                    new SoilAssessment
+                            _db.SaveSoilAssessment(soilAssessment);
+
+                            // -------------------------------------------------
+                            // Create the initial farm journey.
+                            // -------------------------------------------------
+                            var activities =
+                                new List<FarmActivity>
+                                {
+                                    new FarmActivity
                                     {
                                         FarmProfileId = farmId,
+                                        Title = "Understand your soil",
+                                        Description =
+                                            "Learn your soil type and understand what your crop needs.",
+                                        ActivityDate = DateTime.Today,
+                                        Category = "Soil"
+                                    },
 
-                                        SoilKnowledge =
-                                            pendingModel.SoilKnowledge,
-
-                                        SoilTexture =
-                                            pendingModel.SoilTexture,
-
-                                        SoilColour =
-                                            pendingModel.SoilColour,
-
-                                        Drainage =
-                                            pendingModel.Drainage,
-
-                                        PreviousCrop =
-                                            pendingModel.PreviousCrop,
-
-                                        SoilTestStatus =
-                                            pendingModel.SoilTestStatus,
-
-                                        CreatedAt =
-                                            DateTime.UtcNow
-                                    };
-
-                                soilAssessment.Result =
-                                    BuildSoilResult(soilAssessment);
-
-                                _db.SaveSoilAssessment(
-                                    soilAssessment);
-
-
-                                // Create the same initial farm journey
-                                // Create the same initial farm journey
-                                // that the normal logged-in onboarding
-                                // POST creates.
-                                var activities =
-                                    new List<FarmActivity>
+                                    new FarmActivity
                                     {
-                                        new FarmActivity
-                                        {
-                                            FarmProfileId = farmId,
-                                            Title = "Understand your soil",
-                                            Description =
-                                                "Learn your soil type and understand what your crop needs.",
-                                            ActivityDate = DateTime.Today,
-                                            Category = "Soil"
-                                        },
+                                        FarmProfileId = farmId,
+                                        Title = "Understand your water",
+                                        Description =
+                                            "Review your water source and irrigation needs.",
+                                        ActivityDate = DateTime.Today.AddDays(1),
+                                        Category = "Water"
+                                    },
 
-                                        new FarmActivity
-                                        {
-                                            FarmProfileId = farmId,
-                                            Title = "Understand your water",
-                                            Description =
-                                                "Review your water source and irrigation needs.",
-                                            ActivityDate = DateTime.Today.AddDays(1),
-                                            Category = "Water"
-                                        },
+                                    new FarmActivity
+                                    {
+                                        FarmProfileId = farmId,
+                                        Title = "Learn about choosing your crops",
+                                        Description =
+                                            "Explore how to choose suitable crops for your land, soil, water and local conditions.",
+                                        ActivityDate = DateTime.Today.AddDays(2),
+                                        Category = "Crop"
+                                    },
 
-                                        new FarmActivity
-                                        {
-                                            FarmProfileId = farmId,
-                                            Title = "Learn about choosing your crops",
-                                            Description =
-                                                "Explore how to choose suitable crops for your land, soil, water and local conditions.",
-                                            ActivityDate = DateTime.Today.AddDays(2),
-                                            Category = "Crop"
-                                        },
+                                    new FarmActivity
+                                    {
+                                        FarmProfileId = farmId,
+                                        Title = "Prepare your growing area",
+                                        Description =
+                                            "Prepare your land or growing space before planting.",
+                                        ActivityDate = DateTime.Today.AddDays(4),
+                                        Category = "Preparation"
+                                    },
 
-                                        new FarmActivity
-                                        {
-                                            FarmProfileId = farmId,
-                                            Title = "Prepare your growing area",
-                                            Description =
-                                                "Prepare your land or growing space before planting.",
-                                            ActivityDate = DateTime.Today.AddDays(4),
-                                            Category = "Preparation"
-                                        },
-                                        new FarmActivity
-{
-    FarmProfileId = farmId,
-    Title = "Plant your crop",
-    Description =
-        "Add your crop and record the sowing date to begin your crop journey.",
-    ActivityDate = DateTime.Today.AddDays(6),
-    Category = "Planting"
-},
-                                        new FarmActivity
-                                        {
-                                            FarmProfileId = farmId,
-                                            Title = "Check the weather",
-                                            Description =
-                                                "Review weather conditions before important farm activities.",
-                                            ActivityDate = DateTime.Today.AddDays(5),
-                                            Category = "Weather"
-                                        },
+                                    new FarmActivity
+                                    {
+                                        FarmProfileId = farmId,
+                                        Title = "Plant your crop",
+                                        Description =
+                                            "Add your crop and record the sowing date to begin your crop journey.",
+                                        ActivityDate = DateTime.Today.AddDays(6),
+                                        Category = "Planting"
+                                    },
 
-                                        new FarmActivity
-                                        {
-                                            FarmProfileId = farmId,
-                                            Title = "Record your first crop observation",
-                                            Description =
-                                                "Take a photo of your crop and record what you observe.",
-                                            ActivityDate = DateTime.Today.AddDays(7),
-                                            Category = "Monitoring"
-                                        },
+                                    new FarmActivity
+                                    {
+                                        FarmProfileId = farmId,
+                                        Title = "Check the weather",
+                                        Description =
+                                            "Review weather conditions before important farm activities.",
+                                        ActivityDate = DateTime.Today.AddDays(5),
+                                        Category = "Weather"
+                                    },
 
-                                        new FarmActivity
-                                        {
-                                            FarmProfileId = farmId,
-                                            Title = "Monitor crop growth",
-                                            Description =
-                                                "Review crop growth and look for changes.",
-                                            ActivityDate = DateTime.Today.AddDays(14),
-                                            Category = "Monitoring"
-                                        },
+                                    new FarmActivity
+                                    {
+                                        FarmProfileId = farmId,
+                                        Title = "Record your first crop observation",
+                                        Description =
+                                            "Take a photo of your crop and record what you observe.",
+                                        ActivityDate = DateTime.Today.AddDays(7),
+                                        Category = "Monitoring"
+                                    },
 
-                                        new FarmActivity
-                                        {
-                                            FarmProfileId = farmId,
-                                            Title = "Learn about harvest readiness",
-                                            Description =
-                                                "Understand the signs that your crop is approaching harvest.",
-                                            ActivityDate = DateTime.Today.AddDays(30),
-                                            Category = "Harvest"
-                                        }
-                                    };
+                                    new FarmActivity
+                                    {
+                                        FarmProfileId = farmId,
+                                        Title = "Monitor crop growth",
+                                        Description =
+                                            "Review crop growth and look for changes.",
+                                        ActivityDate = DateTime.Today.AddDays(14),
+                                        Category = "Monitoring"
+                                    },
 
-                                foreach (var activity in activities)
-                                {
-                                    _db.AddActivity(activity);
-                                }
+                                    new FarmActivity
+                                    {
+                                        FarmProfileId = farmId,
+                                        Title = "Learn about harvest readiness",
+                                        Description =
+                                            "Understand the signs that your crop is approaching harvest.",
+                                        ActivityDate = DateTime.Today.AddDays(30),
+                                        Category = "Harvest"
+                                    }
+                                };
 
-                                // The pending form has now been successfully
-                                // converted into a real farm for this account.
-                                TempData.Remove("PendingFarmOnboarding");
-                                TempData.Remove("OnboardingLoginMessage");
-
-                                // Show the user's complete farm list so the
-                                // newly created farm is visible immediately.
-                                return RedirectToAction(
-                                    nameof(MyFarms));
+                            foreach (var activity in activities)
+                            {
+                                _db.AddActivity(activity);
                             }
+
+                            // Pending data has now been converted into a farm.
+                            TempData.Remove("PendingFarmOnboarding");
+                            TempData.Remove("OnboardingLoginMessage");
+
+                            return RedirectToAction(
+                                nameof(MyFarms));
                         }
                         catch
                         {
-                            // If pending data cannot be restored, continue
-                            // with the normal existing-farm routing below.
+                            // If the pending farm cannot be restored/saved,
+                            // continue with normal existing-farm routing.
                         }
                     }
 
                     // -------------------------------------------------
-                    // No pending farm: handle the user's existing farms.
+                    // No pending farm: handle existing farms.
                     // -------------------------------------------------
                     var farms =
                         _db.GetFarmsByUserId(userId);
 
                     if (farms != null)
                     {
-                        // One existing farm:
-                        // go directly to that farm's crops.
+                        // One existing farm -> open its crops.
                         if (farms.Count() == 1)
                         {
                             var farm =
@@ -622,33 +614,36 @@ namespace KrishiSahayAI.Controllers
                                 });
                         }
 
-                        // Multiple existing farms:
-                        // let the user choose the farm.
+                        // Multiple existing farms -> let the user choose.
                         if (farms.Count() > 1)
                         {
                             return RedirectToAction(
                                 nameof(MyFarms));
                         }
                     }
+
+                    // No farms -> show the Create Your Farm form.
+                    return View(
+                        new FarmOnboardingViewModel());
                 }
             }
 
             // ---------------------------------------------------------
             // New / anonymous user
             // ---------------------------------------------------------
-            // Restore onboarding data if an anonymous user had
-            // completed the form before login/register.
-            // ---------------------------------------------------------
             var model =
                 new FarmOnboardingViewModel();
 
-            if (TempData.TryGetValue(
-                    "PendingFarmOnboarding",
-                    out var viewPendingValue)
-                && viewPendingValue is string viewPendingJson
-                && !string.IsNullOrWhiteSpace(viewPendingJson))
+            // Restore onboarding data if an anonymous user completed the
+            // form before login/register. Protect this read from an invalid
+            // or stale TempData cookie as well.
+            try
             {
-                try
+                if (TempData.TryGetValue(
+                        "PendingFarmOnboarding",
+                        out var viewPendingValue)
+                    && viewPendingValue is string viewPendingJson
+                    && !string.IsNullOrWhiteSpace(viewPendingJson))
                 {
                     var pendingModel =
                         JsonSerializer.Deserialize<FarmOnboardingViewModel>(
@@ -659,10 +654,10 @@ namespace KrishiSahayAI.Controllers
                         model = pendingModel;
                     }
                 }
-                catch
-                {
-                    // If restoration fails, show a fresh onboarding form.
-                }
+            }
+            catch
+            {
+                // Show a fresh onboarding form if TempData cannot be read.
             }
 
             return View(model);
