@@ -1,9 +1,9 @@
+using KrishiSahay.Data;
 using KrishiSahayAI.Data;
 using KrishiSahayAI.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using KrishiSahay.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,15 +27,21 @@ builder.Services.AddRazorPages();
 //     DB_NAME
 // ------------------------------------------------------------
 
-var cloudSqlSocket = Environment.GetEnvironmentVariable("INSTANCE_UNIX_SOCKET");
+var cloudSqlSocket =
+    Environment.GetEnvironmentVariable("INSTANCE_UNIX_SOCKET");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     if (!string.IsNullOrWhiteSpace(cloudSqlSocket))
     {
-        var dbUser = Environment.GetEnvironmentVariable("DB_USER");
-        var dbPassword = Environment.GetEnvironmentVariable("DB_PASS");
-        var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+        var dbUser =
+            Environment.GetEnvironmentVariable("DB_USER");
+
+        var dbPassword =
+            Environment.GetEnvironmentVariable("DB_PASS");
+
+        var dbName =
+            Environment.GetEnvironmentVariable("DB_NAME");
 
         if (string.IsNullOrWhiteSpace(dbUser) ||
             string.IsNullOrWhiteSpace(dbPassword) ||
@@ -90,7 +96,9 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // ------------------------------------------------------------
-// Register application SQLite database
+// Register application database
+// Local: SQLite
+// Cloud Run: Cloud SQL PostgreSQL
 // ------------------------------------------------------------
 
 builder.Services.AddSingleton<AppDb>();
@@ -116,7 +124,9 @@ builder.Services.AddHttpClient<IWeatherService, WeatherService>();
 var app = builder.Build();
 
 // ------------------------------------------------------------
-// Initialize application SQLite database
+// Initialize application database
+// Local: SQLite
+// Cloud Run: Cloud SQL PostgreSQL
 // ------------------------------------------------------------
 
 using (var scope = app.Services.CreateScope())
@@ -130,8 +140,12 @@ using (var scope = app.Services.CreateScope())
 // ------------------------------------------------------------
 // Initialize Identity database
 // ------------------------------------------------------------
-// Local: existing SQLite Identity database remains unchanged.
-// Cloud Run: creates Identity tables in the new Cloud SQL database.
+// Local: SQLite
+// Cloud Run: Cloud SQL PostgreSQL
+//
+// Migrations create/update:
+//     - ASP.NET Core Identity tables
+//     - DataProtectionKeys
 // ------------------------------------------------------------
 
 using (var scope = app.Services.CreateScope())
@@ -139,17 +153,9 @@ using (var scope = app.Services.CreateScope())
     var db =
         scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-    if (!string.IsNullOrWhiteSpace(cloudSqlSocket))
-    {
-        // Cloud SQL PostgreSQL database is currently empty.
-        db.Database.EnsureCreated();
-    }
-    else
-    {
-        // Local development continues to use EF migrations.
-        db.Database.Migrate();
-    }
+    db.Database.Migrate();
 }
+
 // ------------------------------------------------------------
 // Configure HTTP pipeline
 // ------------------------------------------------------------
