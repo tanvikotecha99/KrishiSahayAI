@@ -139,9 +139,17 @@ using (var scope = app.Services.CreateScope())
     var db =
         scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-    db.Database.Migrate();
+    if (!string.IsNullOrWhiteSpace(cloudSqlSocket))
+    {
+        // Cloud SQL PostgreSQL database is currently empty.
+        db.Database.EnsureCreated();
+    }
+    else
+    {
+        // Local development continues to use EF migrations.
+        db.Database.Migrate();
+    }
 }
-
 // ------------------------------------------------------------
 // Configure HTTP pipeline
 // ------------------------------------------------------------
