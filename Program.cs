@@ -143,9 +143,10 @@ using (var scope = app.Services.CreateScope())
 // Local: SQLite
 // Cloud Run: Cloud SQL PostgreSQL
 //
-// Migrations create/update:
-//     - ASP.NET Core Identity tables
-//     - DataProtectionKeys
+// Cloud Run currently uses EnsureCreated() because the existing
+// Cloud SQL Identity database was initialized with EnsureCreated().
+//
+// Local development continues to use EF migrations.
 // ------------------------------------------------------------
 
 using (var scope = app.Services.CreateScope())
@@ -153,7 +154,16 @@ using (var scope = app.Services.CreateScope())
     var db =
         scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-    db.Database.Migrate();
+    if (!string.IsNullOrWhiteSpace(cloudSqlSocket))
+    {
+        // Cloud Run: Cloud SQL PostgreSQL
+        db.Database.EnsureCreated();
+    }
+    else
+    {
+        // Local Visual Studio: SQLite
+        db.Database.Migrate();
+    }
 }
 
 // ------------------------------------------------------------
